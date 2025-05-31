@@ -1,0 +1,122 @@
+<x-app-layout>
+    <div class="py-8 bg-gradient-to-br from-blue-50 via-white to-blue-100 min-h-screen">
+        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-8">
+                {{-- Header Section --}}
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h1 class="text-2xl font-semibold text-gray-800">{{ $viewModel->title }}</h1>
+                        @if($viewModel->subtitle)
+                            <p class="text-gray-600 mt-1">{{ $viewModel->subtitle }}</p>
+                        @endif
+                    </div>
+
+                    <div class="flex gap-2">
+                        @if($viewModel->can_create)
+                            <a href="{{ $viewModel->createRoute }}" 
+                               class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 transition inline-flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                </svg>
+                                Nuevo Proyecto
+                            </a>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- Table Section --}}
+                <div class="overflow-x-auto min-h-[400px]">
+                    <table class="w-full bg-white shadow rounded">
+                        <thead>
+                            <tr class="bg-blue-100 text-left">
+                                <th class="px-4 py-2">Identificador</th>
+                                <th class="px-4 py-2">Nombre</th>
+                                @if(!$viewModel->context || $viewModel->context !== 'organization')
+                                    <th class="px-4 py-2">Organización</th>
+                                @endif
+                                <th class="px-4 py-2">Estado</th>
+                                <th class="px-4 py-2">Usuarios</th>
+                                <th class="px-4 py-2">Vulnerabilidades</th>
+                                <th class="px-4 py-2">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($viewModel->projects as $project)
+                                <tr class="border-b hover:bg-blue-50 transition">
+                                    <td class="px-4 py-2">{{ $project->identifier }}</td>
+                                    <td class="px-4 py-2">{{ $project->name }}</td>
+                                    @if(!$viewModel->context || $viewModel->context !== 'organization')
+                                        <td class="px-4 py-2">{{ $project->organization->name }}</td>
+                                    @endif
+                                    <td class="px-4 py-2">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                            {{ $project->is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                            {{ $project->is_active ? 'Activo' : 'Inactivo' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-2">
+                                        <x-user-avatars :users="$project->users" />
+                                    </td>
+                                    <td class="px-4 py-2">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            {{ $project->vulnerabilities_count }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-2">
+                                        <div class="relative" x-data="{ open: false }">
+                                            <button @click="open = !open" class="text-gray-400 hover:text-gray-600">
+                                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                                                </svg>
+                                            </button>
+
+                                            <div x-show="open" @click.away="open = false"
+                                                 class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                                                
+                                                <a href="{{ route('projects.vulnerabilities.index', $project) }}" 
+                                                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                    Ver Vulnerabilidades
+                                                </a>
+                                                <a href="{{ route('projects.users.index', $project) }}" 
+                                                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                    Gestionar Usuarios
+                                                </a>
+                                                @can('viewPdfReport', $project)
+                                                <a href="{{ route('projects.report.pdf', $project) }}" 
+                                                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                   target="_blank">  {{-- target="_blank" para abrir en nueva pestaña --}}
+                                                    Descargar Informe (PDF)
+                                                </a>
+                                                @endcan
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="px-4 py-6 text-center text-gray-500">
+                                        No se encontraron proyectos.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+
+                    <div class="mt-4">
+                        {{ $viewModel->projects->links() }}
+                    </div>
+                </div>
+
+                {{-- Back Button --}}
+                @if($viewModel->backRoute)
+                    <div class="mt-6">
+                        <a href="{{ $viewModel->backRoute }}" 
+                           class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded shadow transition">
+                            ← Volver
+                        </a>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+</x-app-layout>

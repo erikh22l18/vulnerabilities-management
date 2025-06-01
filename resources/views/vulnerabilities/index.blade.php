@@ -10,14 +10,25 @@
                         @endif
                     </div>
                     <div class="flex gap-2">
-                        @can('create', App\Domain\Vulnerabilities\Models\Vulnerability::class)
-                        <a href="{{ $viewModel->createRoute }}" class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 transition inline-flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                            </svg>
-                            Nueva Vulnerabilidad
-                        </a>
-                        @endcan
+                        @if(isset($viewModel->project) && $viewModel->context === 'project')
+                            @can('crearVulnerabilidades', $viewModel->project)
+                            <a href="{{ $viewModel->createRoute }}" class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 transition inline-flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                                </svg>
+                                Nueva Vulnerabilidad
+                            </a>
+                            @endcan
+                        @else
+                            @can('create', App\Domain\Vulnerabilities\Models\Vulnerability::class)
+                            <a href="{{ $viewModel->createRoute }}" class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 transition inline-flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                                </svg>
+                                Nueva Vulnerabilidad
+                            </a>
+                            @endcan
+                        @endif
                         @if($viewModel->can_import)
                         <a href="{{ route('vulnerabilities.charge') }}" class="bg-green-600 text-white px-4 py-2 rounded shadow hover:bg-green-700 transition inline-flex items-center">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">

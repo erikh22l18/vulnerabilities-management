@@ -84,10 +84,9 @@ class ProjectPolicyTest extends TestCase
     }
 
     /** @test */
-    public function lider_cannot_view_vulnerabilities_of_inactive_project()
+    public function lider_can_view_vulnerabilities_of_inactive_project() // RENAMED and behaviour changed
     {
-        // Assuming the 'verVulnerabilidades' policy method in ProjectPolicy was updated
-        // to check project status.
+        // Policy for verVulnerabilidades no longer checks project status.
         // And assuming there's a route like projects.vulnerabilities.index
 
         // Create a vulnerability in the inactive project to test against
@@ -95,17 +94,19 @@ class ProjectPolicyTest extends TestCase
 
         $this->actingAs($this->liderUser)
             ->getJson(route('projects.vulnerabilities.index', $this->inactiveProject))
-            ->assertStatus(403);
+            ->assertStatus(200); // CHANGED from 403 to 200
     }
 
     /** @test */
-    public function miembro_cannot_view_vulnerabilities_of_inactive_project()
+    public function miembro_can_view_vulnerabilities_of_inactive_project_they_are_member_of() // RENAMED (slightly for clarity) and behaviour changed
     {
+        // Policy for verVulnerabilidades no longer checks project status.
+        // Miembro should be able to see vulnerabilities if they are part of the project.
         Vulnerability::factory()->create(['project_id' => $this->inactiveProject->id]);
 
-        $this->actingAs($this->miembroUser)
+        $this->actingAs($this->miembroUser) // User is attached to inactiveProject in setUp()
             ->getJson(route('projects.vulnerabilities.index', $this->inactiveProject))
-            ->assertStatus(403);
+            ->assertStatus(200); // CHANGED from 403 to 200
     }
 
     /** @test */

@@ -20,28 +20,61 @@ class TaskController extends Controller
     {
         $this->authorize('viewAny', Task::class);
 
-        $user = Auth::user(); // Ensure $user is available
-        $query = Task::with(['vulnerability', 'project', 'assignee']);
+        $user = Auth::user();
+        $show_create_task_button = false;
+
+        // Determine accessible vulnerabilities based on role
+        $vulnerabilityQuery = Vulnerability::query()->with('project');
 
         if ($user->hasRole('miembro')) {
-            $query->whereHas('vulnerability.project.users', function ($q) use ($user) {
-                $q->where('users.id', $user->id);
-            });
+            $projectIds = $user->projects()->pluck('projects.id');
+            $vulnerabilityQuery->whereIn('project_id', $projectIds);
+        }
+        // For admin/lider, no additional project filtering here for accessible vulnerabilities.
+
+        $accessibleVulnerabilities = $vulnerabilityQuery->get();
+
+        foreach ($accessibleVulnerabilities as $vulnerability) {
+            // Project must exist and be active
+            if (!$vulnerability->project || $vulnerability->project->status !== 'active') {
+                continue;
+            }
+            // Vulnerability must not be closed
+            if ($vulnerability->state === Vulnerability::STATE_CERRADA) {
+                continue;
+            }
+            // User must have permission to create tasks for this specific vulnerability
+            if ($user->can('crearTareas', $vulnerability)) {
+                $show_create_task_button = true;
+                break; // Found at least one valid target
+            }
         }
 
-        $tasks = $query->orderBy('created_at', 'desc')
-            ->paginate(10);
+        // Fetch tasks for the index view (existing logic)
+        $tasksQuery = Task::with(['vulnerability', 'project', 'assignee']);
+        if ($user->hasRole('miembro')) {
+            // Filter tasks shown to miembro based on their projects
+            // This could be project directly associated with task or project of the vulnerability
+             $tasksQuery->where(function ($q) use ($user) {
+                $projectIds = $user->projects()->pluck('projects.id');
+                $q->whereIn('project_id', $projectIds)
+                  ->orWhereHas('vulnerability', function ($vq) use ($projectIds) {
+                      $vq->whereIn('project_id', $projectIds);
+                  });
+            });
+        }
+        $tasks = $tasksQuery->orderBy('created_at', 'desc')->paginate(10);
 
         $viewModel = new TaskIndexViewModel(
             title: 'Tareas',
             tasks: $tasks,
             backRoute: route('home'),
-            createRoute: route('tasks.create'),
-            can_create: Auth::user()->can('crear tareas'),
-
+            createRoute: route('tasks.create')
+            // can_create property is no longer set here directly,
+            // it will be superseded by $show_create_task_button in the view.
         );
 
-        return view('tasks.index', compact('viewModel'));
+        return view('tasks.index', compact('viewModel', 'show_create_task_button'));
     }
 
     public function show(Task $task)

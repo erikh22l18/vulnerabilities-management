@@ -58,11 +58,19 @@ class TaskPolicyTest extends TestCase
         $this->openVulnOnInactiveProject = Vulnerability::factory()->create(['project_id' => $this->inactiveProject->id, 'state' => self::VULN_STATE_ABIERTA]);
 
         // Setup Tasks
-        $this->taskForOpenVulnOnActiveProject = Task::factory()->create(['vulnerability_id' => $this->openVulnOnActiveProject->id, 'project_id' => null, 'created_by' => $this->liderUser->id]);
-        $this->taskForClosedVulnOnActiveProject = Task::factory()->create(['vulnerability_id' => $this->closedVulnOnActiveProject->id, 'project_id' => null, 'created_by' => $this->liderUser->id]);
-        $this->taskForOpenVulnOnInactiveProject = Task::factory()->create(['vulnerability_id' => $this->openVulnOnInactiveProject->id, 'project_id' => null, 'created_by' => $this->liderUser->id]);
+        $this->taskForOpenVulnOnActiveProject = Task::factory()->create(['vulnerability_id' => $this->openVulnOnActiveProject->id, 'project_id' => $this->activeProject->id, 'created_by' => $this->liderUser->id]);
+        $this->taskForClosedVulnOnActiveProject = Task::factory()->create(['vulnerability_id' => $this->closedVulnOnActiveProject->id, 'project_id' => $this->activeProject->id, 'created_by' => $this->liderUser->id]);
+        $this->taskForOpenVulnOnInactiveProject = Task::factory()->create(['vulnerability_id' => $this->openVulnOnInactiveProject->id, 'project_id' => $this->inactiveProject->id, 'created_by' => $this->liderUser->id]);
         $this->taskForActiveProject = Task::factory()->create(['project_id' => $this->activeProject->id, 'vulnerability_id' => null, 'created_by' => $this->liderUser->id]);
         $this->taskForInactiveProject = Task::factory()->create(['project_id' => $this->inactiveProject->id, 'vulnerability_id' => null, 'created_by' => $this->liderUser->id]);
+
+        // Associate miembroUser with inactiveProject for view tests
+        $this->inactiveProject->users()->attach($this->miembroUser);
+        // Ensure miembroUser also has general 'ver tareas' permission if not covered by role seeding
+        if (!Permission::where('name', 'ver tareas')->exists()) {
+            Permission::create(['name' => 'ver tareas']);
+        }
+        $this->miembroUser->givePermissionTo('ver tareas');
     }
 
     // --- Task Create Tests ---
@@ -211,4 +219,50 @@ class TaskPolicyTest extends TestCase
     }
 
     // Admin bypass tests would also be relevant here.
+
+    // --- Task View Tests for Inactive Project Context ---
+
+    /** @test */
+    public function lider_can_view_task_list_for_vulnerability_in_inactive_project()
+    {
+        // TaskPolicy@viewAny doesn't prevent based on project status.
+        // VulnerabilityPolicy@viewTasks (if used by controller) also doesn't prevent.
+        $this->actingAs($this->liderUser)
+            ->getJson(route('vulnerabilities.tasks.index', $this->openVulnOnInactiveProject))
+            ->assertOk()
+            ->assertJsonFragment(['title' => $this->taskForOpenVulnOnInactiveProject->title]);
+    }
+
+    /** @test */
+    public function lider_can_view_specific_task_for_vulnerability_in_inactive_project()
+    {
+        // TaskPolicy@view doesn't prevent based on project status.
+        $this->actingAs($this->liderUser)
+            ->getJson(route('tasks.show', $this->taskForOpenVulnOnInactiveProject))
+            ->assertOk()
+            ->assertJsonFragment(['title' => $this->taskForOpenVulnOnInactiveProject->title]);
+    }
+
+    /** @test */
+    public function miembro_can_view_task_list_for_vulnerability_in_inactive_project_if_member_of_project()
+    {
+        // Setup ensures miembroUser is part of inactiveProject.
+        // TaskPolicy@viewAny allows 'miembro'.
+        // VulnerabilityPolicy@viewTasks allows 'miembro' if part of project.
+        $this->actingAs($this->miembroUser)
+            ->getJson(route('vulnerabilities.tasks.index', $this->openVulnOnInactiveProject))
+            ->assertOk()
+            ->assertJsonFragment(['title' => $this->taskForOpenVulnOnInactiveProject->title]);
+    }
+
+    /** @test */
+    public function miembro_can_view_specific_task_for_vulnerability_in_inactive_project_if_member_of_project()
+    {
+        // Setup ensures miembroUser is part of inactiveProject.
+        // TaskPolicy@view allows 'miembro' if part of project associated with task (directly or via vulnerability).
+        $this->actingAs($this->miembroUser)
+            ->getJson(route('tasks.show', $this->taskForOpenVulnOnInactiveProject))
+            ->assertOk()
+            ->assertJsonFragment(['title' => $this->taskForOpenVulnOnInactiveProject->title]);
+    }
 }

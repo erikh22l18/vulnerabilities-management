@@ -99,64 +99,8 @@
                     {{-- For now, let's comment it out if the role dashboards are meant to be the main content --}}
                     {{-- <x-welcome /> --}}
 
-                    <div class="mt-10"> {{-- This was the original "Resumen de Estado de Vulnerabilidades" section --}}
-                        {{-- This content might be duplicative if admin dashboard shows similar global stats --}}
-                        {{-- Consider if this section is still needed globally or if its elements move into specific role dashboards --}}
-                        {{-- For now, it will remain, potentially showing below the role-specific dashboard partial --}}
-                        <h2 class="text-xl font-bold text-gray-700 mb-4">Resumen Global (Datos Anteriores)</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div class="bg-purple-50 p-6 rounded-lg shadow">
-                                <h3 class="font-semibold text-purple-700 mb-2">Proyectos por Organización</h3>
-                                <ul class="text-gray-700 text-sm">
-                                    @foreach($orgs as $org)
-                                    <li class="flex justify-between items-center border-b py-1">
-                                        <div>
-                                            <span>{{ $org->name }}</span>
-                                            <a href="{{ route('organizations.projects.index', $org) }}"
-                                                class="ml-2 inline-block px-2 py-0.5 bg-yellow-500 text-white text-xs rounded hover:bg-yellow-600 transition">
-                                                Ver
-                                            </a>
-                                        </div>
-                                        <span class="font-bold">{{ $org->projects_count }}</span>
-                                    </li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                            <div class="bg-blue-50 p-6 rounded-lg shadow">
-                                <h3 class="font-semibold text-blue-700 mb-2">Vulnerabilidades por Proyecto</h3>
-                                <ul class="text-gray-700 text-sm">
-                                    @foreach($projects as $project)
-                                    <li class="mb-2">
-                                        <div class="flex justify-between items-center">
-                                            <div>
-                                                <span>{{ $project->name }}</span>
-                                                <a href="{{ route('projects.vulnerabilities.index', $project) }}"
-                                                    class="ml-2 inline-block px-2 py-0.5 bg-red-500 text-white text-xs rounded hover:bg-red-600 transition">
-                                                    Ver
-                                                </a>
-                                            </div>
-                                            <span>
-                                                {{ $project->vulnerabilities_count }} total
-                                                @if($project->vulnerabilities_count > 0)
-                                                <span class="ml-2 text-xs text-green-700">
-                                                    {{ $project->treatment_percentage }}% tratadas
-                                                </span>
-                                                @else
-                                                <span class="ml-2 text-xs text-gray-400">Sin vulnerabilidades</span>
-                                                @endif
-                                            </span>
-                                        </div>
-                                        @if($project->vulnerabilities_count > 0)
-                                        <div class="w-full bg-gray-200 rounded h-2 mt-1">
-                                            <div class="bg-green-400 h-2 rounded" style="width: {{ $project->treatment_percentage }}%"></div>
-                                        </div>
-                                        @endif
-                                    </li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+                    {{-- The "Resumen Global (Datos Anteriores)" section has been removed as per the subtask. --}}
+                    {{-- The "Accesos Rápidos Generales" section remains above this comment block. --}}
                 </div>
             </div>
         </div>

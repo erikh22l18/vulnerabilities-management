@@ -52,11 +52,40 @@
                     <span class="font-semibold">Creado por:</span>
                     <span class="ml-2">{{ $task->creator->name ?? '-' }}</span>
                 </div>
-                <div class="flex justify-between mt-8">
-                    <a href="{{ route('vulnerabilities.tasks.index', $vulnerability) }}"
-                        class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded shadow transition">
-                        ← Volver al listado
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <span class="font-semibold text-gray-600">Fecha de Creación:</span>
+                        <p class="text-gray-800">{{ $task->created_at ? $task->created_at->format('d/m/Y H:i') : '-' }}</p>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-gray-600">Última Actualización:</span>
+                        <p class="text-gray-800">{{ $task->updated_at ? $task->updated_at->format('d/m/Y H:i') : '-' }}</p>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex justify-between items-center">
+                    <a href="{{ route('tasks.index') }}"
+                       class="text-blue-600 hover:text-blue-800 transition duration-150 ease-in-out">
+                        &larr; Volver al listado de tareas
                     </a>
+                    <div class="flex space-x-3">
+                        @can('update', $task)
+                            <a href="{{ route('tasks.edit', $task) }}"
+                               class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-4 py-2 rounded shadow transition duration-150 ease-in-out">
+                                Editar Tarea
+                            </a>
+                        @endcan
+                        @can('delete', $task)
+                            <form action="{{ route('tasks.destroy', $task) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta tarea?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                        class="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded shadow transition duration-150 ease-in-out">
+                                    Eliminar Tarea
+                                </button>
+                            </form>
+                        @endcan
+                    </div>
                 </div>
             </div>
         </div>

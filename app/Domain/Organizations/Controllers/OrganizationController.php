@@ -4,8 +4,10 @@ namespace App\Domain\Organizations\Controllers;
 
 use App\Http\Controllers\Controller;
 use \Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Http\Request;
+use Illuminate\Http\Request; // Will be replaced by FormRequests in store/update
 use App\Domain\Organizations\Models\Organization;
+use App\Domain\Organizations\Requests\StoreOrganizationRequest; // Added
+use App\Domain\Organizations\Requests\UpdateOrganizationRequest; // Added
 // use Illuminate\Testing\Fluent\Concerns\Has; // This import seems unused.
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View; // For type hinting views
@@ -69,19 +71,13 @@ class OrganizationController extends Controller
      * @throws \Illuminate\Auth\Access\AuthorizationException If the user is not authorized to create organizations.
      * @throws \Illuminate\Validation\ValidationException If request validation fails.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(StoreOrganizationRequest $request): RedirectResponse
     {
-        $this->authorize('create', Organization::class);
-
-        // Validate the incoming request data.
-        $validated = $request->validate([
-            'name'           => 'required|string|max:255|unique:organizations,name', // Name should be unique.
-            'location'       => 'nullable|string|max:255',
-            'business_model' => 'nullable|string|max:255',
-        ]);
+        // Authorization and validation are now handled by StoreOrganizationRequest
+        $validatedData = $request->validated();
 
         // Create the organization record.
-        $organization = Organization::create($validated);
+        $organization = Organization::create($validatedData);
 
         return redirect()->route('organizations.index')->with('success', 'Organización creada correctamente.');
     }
@@ -108,20 +104,13 @@ class OrganizationController extends Controller
      * @throws \Illuminate\Auth\Access\AuthorizationException If the user is not authorized to update the organization.
      * @throws \Illuminate\Validation\ValidationException If request validation fails.
      */
-    public function update(Request $request, Organization $organization): RedirectResponse
+    public function update(UpdateOrganizationRequest $request, Organization $organization): RedirectResponse
     {
-        $this->authorize('update', $organization);
-
-        // Validate the incoming request data.
-        $validated = $request->validate([
-            // Name should be unique, ignoring the current organization's name.
-            'name' => 'required|string|max:255|unique:organizations,name,' . $organization->id,
-            'location' => 'nullable|string|max:255',
-            'business_model' => 'nullable|string|max:255',
-        ]);
+        // Authorization and validation are now handled by UpdateOrganizationRequest
+        $validatedData = $request->validated();
 
         // Update the organization record.
-        $organization->update($validated);
+        $organization->update($validatedData);
 
         return redirect()->route('organizations.index')->with('success', 'Organización actualizada correctamente.');
     }

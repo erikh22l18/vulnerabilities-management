@@ -7,10 +7,12 @@ use App\Domain\Tasks\Models\Task;
 use App\Domain\Tasks\ViewModels\TaskIndexViewModel;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
+use Illuminate\Http\Request; // Will be replaced by FormRequests in store/update
 use App\Domain\Projects\Models\Project;
 use App\Models\User;
 use App\Domain\Vulnerabilities\Models\Vulnerability;
+use App\Domain\Tasks\Requests\StoreTaskRequest; // Added
+use App\Domain\Tasks\Requests\UpdateTaskRequest; // Added
 
 class TaskController extends Controller
 {
@@ -114,20 +116,10 @@ class TaskController extends Controller
      * @throws \Illuminate\Auth\Access\AuthorizationException
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): \Illuminate\Http\RedirectResponse
+    public function store(StoreTaskRequest $request): \Illuminate\Http\RedirectResponse
     {
-        $this->authorize('create', Task::class);
-
-        $validatedData = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'vulnerability_id' => 'required|exists:vulnerabilities,id',
-            'project_id' => 'nullable|exists:projects,id', // Made nullable to allow derivation
-            'assigned_to' => 'nullable|exists:users,id',
-            'due_date' => 'nullable|date',
-            'priority' => 'required|string|in:baja,media,alta,critica',
-            'status' => 'required|string|in:pendiente,en_progreso,completada,cancelada',
-        ]);
+        // Authorization and validation are now handled by StoreTaskRequest
+        $validatedData = $request->validated();
 
         $validatedData['created_by'] = auth()->id();
 
@@ -175,20 +167,10 @@ class TaskController extends Controller
      * @throws \Illuminate\Auth\Access\AuthorizationException
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function update(Request $request, Task $task): \Illuminate\Http\RedirectResponse
+    public function update(UpdateTaskRequest $request, Task $task): \Illuminate\Http\RedirectResponse
     {
-        $this->authorize('update', $task);
-
-        $validatedData = $request->validate([
-            'title' => 'sometimes|required|string|max:255',
-            'description' => 'nullable|string',
-            'vulnerability_id' => 'sometimes|required|exists:vulnerabilities,id',
-            'project_id' => 'sometimes|nullable|exists:projects,id', // Made nullable
-            'assigned_to' => 'nullable|exists:users,id',
-            'due_date' => 'nullable|date',
-            'priority' => 'sometimes|required|string|in:baja,media,alta,critica',
-            'status' => 'sometimes|required|string|in:pendiente,en_progreso,completada,cancelada',
-        ]);
+        // Authorization and validation are now handled by UpdateTaskRequest
+        $validatedData = $request->validated();
 
         // Ensure project_id is set if vulnerability_id changes or is provided
         if ($request->filled('vulnerability_id') && !empty($validatedData['vulnerability_id'])) {

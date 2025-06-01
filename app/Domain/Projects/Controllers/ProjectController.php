@@ -5,9 +5,12 @@ namespace App\Domain\Projects\Controllers;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
+use Illuminate\Http\Request; // Will be replaced by FormRequests in store/update/updateStatus
 use App\Domain\Projects\Models\Project;
 use App\Domain\Organizations\Models\Organization;
+use App\Domain\Projects\Requests\StoreProjectRequest;       // Added
+use App\Domain\Projects\Requests\UpdateProjectRequest;       // Added
+use App\Domain\Projects\Requests\UpdateProjectStatusRequest; // Added
 use Illuminate\Support\Str; // For Str::slug
 use App\Domain\Projects\ViewModels\ProjectIndexViewModel;
 use Illuminate\View\View; // For type hinting views
@@ -87,20 +90,15 @@ class ProjectController extends Controller
      * @throws \Illuminate\Auth\Access\AuthorizationException If the user is not authorized to create projects.
      * @throws \Illuminate\Validation\ValidationException If request validation fails.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(StoreProjectRequest $request): RedirectResponse
     {
-        $this->authorize('create', Project::class);
-
-        // Validate the incoming request data.
-        $validated = $request->validate([
-            'identifier'      => 'required|string|max:100|unique:projects,identifier', // Ensure identifier is unique
-            'name'            => 'required|string|max:255',
-            'general_objective' => 'required|string|max:500',
-            'organization_id' => 'required|exists:organizations,id', // Ensure organization exists
-        ]);
+        // Authorization and validation are handled by StoreProjectRequest
+        $validatedData = $request->validated();
 
         // Create the project record.
-        $project = Project::create($validated);
+        // Note: If 'created_by' or 'lider_id' needs to be set, it should be added here
+        // e.g., $validatedData['created_by'] = Auth::id();
+        $project = Project::create($validatedData);
 
         // Optionally, assign the creating user to the project here if needed.
         // $user = Auth::user();
@@ -146,20 +144,13 @@ class ProjectController extends Controller
      * @throws \Illuminate\Auth\Access\AuthorizationException If the user is not authorized to update the project.
      * @throws \Illuminate\Validation\ValidationException If request validation fails.
      */
-    public function update(Request $request, Project $project): RedirectResponse
+    public function update(UpdateProjectRequest $request, Project $project): RedirectResponse
     {
-        $this->authorize('update', $project);
-
-        // Validate the incoming request data.
-        $validated = $request->validate([
-            'identifier'      => 'required|string|max:100|unique:projects,identifier,' . $project->id, // Ensure identifier is unique, ignoring current project
-            'name'            => 'required|string|max:255',
-            'general_objective' => 'required|string|max:500',
-            'organization_id' => 'required|exists:organizations,id', // Ensure organization exists
-        ]);
+        // Authorization and validation are handled by UpdateProjectRequest
+        $validatedData = $request->validated();
 
         // Update the project record.
-        $project->update($validated);
+        $project->update($validatedData);
 
         return redirect()->route('projects.index')->with('success', 'Proyecto actualizado correctamente.');
     }
@@ -233,24 +224,15 @@ class ProjectController extends Controller
      * @throws \Illuminate\Auth\Access\AuthorizationException
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function updateStatus(Request $request, Project $project): RedirectResponse
+    public function updateStatus(UpdateProjectStatusRequest $request, Project $project): RedirectResponse
     {
-        $this->authorize('update', $project); // Or a more specific 'updateStatus' permission
+        // Authorization and validation are handled by UpdateProjectStatusRequest
+        $validatedData = $request->validated();
 
-        $validated = $request->validate([
-            'status' => 'required|string|in:active,inactive,activo,inactivo', // Add 'activo' and 'inactivo' if those are used
-        ]);
+        // The UpdateProjectStatusRequest already prepares 'status' to be lowercase via prepareForValidation()
+        // So, $validatedData['status'] will be 'active' or 'inactive'.
 
-        // Normalize status to 'active' or 'inactive' if 'activo'/'inactivo' are used
-        $statusToUpdate = strtolower($validated['status']);
-        if ($statusToUpdate === 'activo') {
-            $statusToUpdate = 'active';
-        } elseif ($statusToUpdate === 'inactivo') {
-            $statusToUpdate = 'inactive';
-        }
-
-
-        $project->update(['status' => $statusToUpdate]);
+        $project->update(['status' => $validatedData['status']]);
 
         return redirect()->route('projects.index')->with('success', 'Estado del proyecto actualizado correctamente.');
     }

@@ -80,32 +80,36 @@
                         <label for="severity" class="block font-medium text-gray-700 mb-1">Nivel de severidad</label>
                         <select name="severity" id="severity" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200">
                             <option value="">Seleccione</option>
-                            <option value="Baja" {{ old('severity', $vulnerability->severity) == 'Baja' ? 'selected' : '' }}>Baja</option>
-                            <option value="Media" {{ old('severity', $vulnerability->severity) == 'Media' ? 'selected' : '' }}>Media</option>
-                            <option value="Alta" {{ old('severity', $vulnerability->severity) == 'Alta' ? 'selected' : '' }}>Alta</option>
-                            <option value="Crítica" {{ old('severity', $vulnerability->severity) == 'Crítica' ? 'selected' : '' }}>Crítica</option>
+                            <option value="Baja" {{ old('severity', $vulnerability->severity_level) == 'Baja' ? 'selected' : '' }}>Baja</option>
+                            <option value="Media" {{ old('severity', $vulnerability->severity_level) == 'Media' ? 'selected' : '' }}>Media</option>
+                            <option value="Alta" {{ old('severity', $vulnerability->severity_level) == 'Alta' ? 'selected' : '' }}>Alta</option>
+                            <option value="Crítica" {{ old('severity', $vulnerability->severity_level) == 'Crítica' ? 'selected' : '' }}>Crítica</option>
                         </select>
                         @error('severity') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div>
                         <label for="likelihood" class="block font-medium text-gray-700 mb-1">Probabilidad de explotación</label>
-                        <input type="text" name="likelihood" id="likelihood" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" value="{{ old('likelihood', $vulnerability->likelihood) }}">
+                        <input type="number" step="0.01" name="likelihood" id="likelihood" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" value="{{ old('likelihood', $vulnerability->exploit_probability) }}">
                         @error('likelihood') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div>
                         <label for="impact" class="block font-medium text-gray-700 mb-1">Impacto estimado</label>
-                        <input type="text" name="impact" id="impact" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" value="{{ old('impact', $vulnerability->impact) }}">
+                        <select name="impact" id="impact" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" required>
+                            <option value="">Seleccione</option>
+                            <option value="Alto" {{ old('impact', $vulnerability->estimated_impact) == 'Alto' ? 'selected' : '' }}>Alto</option>
+                            <option value="Bajo" {{ old('impact', $vulnerability->estimated_impact) == 'Bajo' ? 'selected' : '' }}>Bajo</option>
+                        </select>
                         @error('impact') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div>
                         <label for="status" class="block font-medium text-gray-700 mb-1">Estado actual</label>
                         <select name="status" id="status" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200">
                             <option value="">Seleccione</option>
-                            <option value="Detectada" {{ old('status', $vulnerability->status) == 'Detectada' ? 'selected' : '' }}>Detectada</option>
-                            <option value="En análisis" {{ old('status', $vulnerability->status) == 'En análisis' ? 'selected' : '' }}>En análisis</option>
-                            <option value="En tratamiento" {{ old('status', $vulnerability->status) == 'En tratamiento' ? 'selected' : '' }}>En tratamiento</option>
-                            <option value="Resuelta" {{ old('status', $vulnerability->status) == 'Resuelta' ? 'selected' : '' }}>Resuelta</option>
-                            <option value="Cerrada" {{ old('status', $vulnerability->status) == 'Cerrada' ? 'selected' : '' }}>Cerrada</option>
+                            <option value="Detectada" {{ old('status', $vulnerability->state) == 'Detectada' ? 'selected' : '' }}>Detectada</option>
+                            <option value="En análisis" {{ old('status', $vulnerability->state) == 'En análisis' ? 'selected' : '' }}>En análisis</option>
+                            <option value="En tratamiento" {{ old('status', $vulnerability->state) == 'En tratamiento' ? 'selected' : '' }}>En tratamiento</option>
+                            <option value="Resuelta" {{ old('status', $vulnerability->state) == 'Resuelta' ? 'selected' : '' }}>Resuelta</option>
+                            <option value="Cerrada" {{ old('status', $vulnerability->state) == 'Cerrada' ? 'selected' : '' }}>Cerrada</option>
                         </select>
                         @error('status') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
@@ -121,7 +125,7 @@
                     </div>
                     <div>
                         <label for="due_date" class="block font-medium text-gray-700 mb-1">Fecha límite o estimada de resolución</label>
-                        <input type="date" name="due_date" id="due_date" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" value="{{ old('due_date', $vulnerability->due_date ? \Illuminate\Support\Carbon::parse($vulnerability->due_date)->format('Y-m-d') : '') }}">
+                        <input type="date" name="due_date" id="due_date" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" value="{{ old('due_date', $vulnerability->resolution_deadline ? \Illuminate\Support\Carbon::parse($vulnerability->resolution_deadline)->format('Y-m-d') : '') }}">
                         @error('due_date') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div>
@@ -137,7 +141,7 @@
                     </div>
                     <div>
                         <label for="source" class="block font-medium text-gray-700 mb-1">Fuente de detección</label>
-                        <input type="text" name="source" id="source" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" value="{{ old('source', $vulnerability->source) }}">
+                        <input type="text" name="source" id="source" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" value="{{ old('source', $vulnerability->detection_source) }}">
                         @error('source') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div class="col-span-2">

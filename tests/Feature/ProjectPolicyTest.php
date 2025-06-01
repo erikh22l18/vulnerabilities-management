@@ -36,7 +36,9 @@ class ProjectPolicyTest extends TestCase
         // These permissions are checked first in the policy before the status check.
         Role::findByName('lider')->givePermissionTo('crear vulnerabilidades');
         Role::findByName('lider')->givePermissionTo('ver vulnerabilidades');
+        Role::findByName('lider')->givePermissionTo('ver tareas'); // Added for viewing tasks link
         Role::findByName('miembro')->givePermissionTo('ver vulnerabilidades');
+        Role::findByName('miembro')->givePermissionTo('ver tareas'); // Added for viewing tasks link
 
 
         $this->activeProject = Project::factory()->create(['status' => self::PROJECT_STATUS_ACTIVE, 'lider_id' => $this->liderUser->id]);
@@ -127,5 +129,63 @@ class ProjectPolicyTest extends TestCase
         $this->actingAs($this->miembroUser)
             ->getJson(route('projects.vulnerabilities.index', $this->activeProject))
             ->assertStatus(200);
+    }
+
+    // --- Tests for UI elements on projects.vulnerabilities.index ---
+
+    /** @test */
+    public function lider_does_not_see_create_vulnerability_button_on_project_vulnerabilities_index_for_inactive_project()
+    {
+        // The page itself is viewable due to verVulnerabilidades policy change
+        $response = $this->actingAs($this->liderUser)
+            ->get(route('projects.vulnerabilities.index', $this->inactiveProject));
+
+        $response->assertOk();
+        // Check based on the Blade logic: @if(isset($viewModel->project) && $viewModel->context === 'project') @can('crearVulnerabilidades', $viewModel->project)
+        // Since project is inactive, 'crearVulnerabilidades' policy will be false.
+        $response->assertDontSee('Nueva Vulnerabilidad'); // Text of the button
+    }
+
+    /** @test */
+    public function lider_sees_create_vulnerability_button_on_project_vulnerabilities_index_for_active_project()
+    {
+        $response = $this->actingAs($this->liderUser)
+            ->get(route('projects.vulnerabilities.index', $this->activeProject));
+
+        $response->assertOk();
+        // For active project, 'crearVulnerabilidades' policy should be true for lider.
+        $response->assertSee('Nueva Vulnerabilidad');
+    }
+
+    /** @test */
+    public function lider_sees_tareas_link_for_vulnerability_in_inactive_project_on_project_vulnerabilities_index()
+    {
+        $vulnerabilityInInactiveProject = Vulnerability::factory()->create(['project_id' => $this->inactiveProject->id]);
+        $this->liderUser->givePermissionTo('ver tareas'); // Ensure permission
+
+        $response = $this->actingAs($this->liderUser)
+            ->get(route('projects.vulnerabilities.index', $this->inactiveProject));
+
+        $response->assertOk();
+        // Assert that the link to view tasks for this specific vulnerability is present.
+        // The link text is "Tareas" and it's wrapped in @can('viewTasks', $vulnerability)
+        // VulnerabilityPolicy@viewTasks allows viewing tasks for inactive projects.
+        $response->assertSee(route('vulnerabilities.tasks.index', $vulnerabilityInInactiveProject));
+        // A more robust check might be to find the link specifically in the dropdown for that vulnerability row.
+        // For now, checking if the route appears in the rendered HTML is a good indicator.
+    }
+
+    /** @test */
+    public function miembro_sees_tareas_link_for_vulnerability_in_inactive_project_on_project_vulnerabilities_index_if_member()
+    {
+        $vulnerabilityInInactiveProject = Vulnerability::factory()->create(['project_id' => $this->inactiveProject->id]);
+        // Miembro is already associated with inactiveProject in setUp()
+        $this->miembroUser->givePermissionTo('ver tareas'); // Ensure permission
+
+        $response = $this->actingAs($this->miembroUser)
+            ->get(route('projects.vulnerabilities.index', $this->inactiveProject));
+
+        $response->assertOk();
+        $response->assertSee(route('vulnerabilities.tasks.index', $vulnerabilityInInactiveProject));
     }
 }

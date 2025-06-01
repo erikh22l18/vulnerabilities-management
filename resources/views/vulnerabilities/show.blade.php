@@ -19,12 +19,12 @@
                     
                         <p class="mb-2"><span class="font-semibold text-gray-700">Estado:</span>
                             <span class="inline-block px-2 py-1 rounded-full text-xs font-semibold
-                                {{ $vulnerability->status === 'Detectada' ? 'bg-yellow-100 text-yellow-700' : '' }}
-                                {{ $vulnerability->status === 'En análisis' ? 'bg-blue-100 text-blue-700' : '' }}
+                                {{ $vulnerability->state === App\Domain\Vulnerabilities\Models\Vulnerability::STATE_DETECTADA ? 'bg-yellow-100 text-yellow-700' : '' }}
+                                {{ $vulnerability->state === App\Domain\Vulnerabilities\Models\Vulnerability::STATE_EN_ANALISIS ? 'bg-blue-100 text-blue-700' : '' }}
                                 {{ $vulnerability->state === App\Domain\Vulnerabilities\Models\Vulnerability::STATE_ASIGNADA ? 'bg-purple-100 text-purple-700' : '' }}
-                                {{ $vulnerability->status === 'En tratamiento' ? 'bg-orange-100 text-orange-700' : '' }}
-                                {{ $vulnerability->status === 'Resuelta' ? 'bg-green-100 text-green-700' : '' }}
-                                {{ $vulnerability->status === 'Cerrada' ? 'bg-gray-200 text-gray-600' : '' }}">
+                                {{ $vulnerability->state === App\Domain\Vulnerabilities\Models\Vulnerability::STATE_EN_TRATAMIENTO ? 'bg-orange-100 text-orange-700' : '' }}
+                                {{ $vulnerability->state === App\Domain\Vulnerabilities\Models\Vulnerability::STATE_RESUELTA ? 'bg-green-100 text-green-700' : '' }}
+                                {{ $vulnerability->state === App\Domain\Vulnerabilities\Models\Vulnerability::STATE_CERRADA ? 'bg-gray-200 text-gray-600' : '' }}">
                                 {{ $vulnerability->state }} {{-- Consistent use of 'state' property --}}
                             </span>
                         </p>

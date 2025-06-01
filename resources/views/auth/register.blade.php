@@ -30,10 +30,12 @@
                     <x-label for="area" value="Área/Departamento" class="text-gray-700" />
                     <x-input id="area" class="block mt-1 w-full border-gray-300 rounded focus:ring focus:ring-blue-200"
                         type="text" name="area" :value="old('area')" autocomplete="off" />
+
                 </div>
 
                 <div class="mt-4">
                     <x-label for="organization_id" value="Organización" class="text-gray-700" />
+
                     <select name="organization_id" id="organization_id" class="block mt-1 w-full border-gray-300 rounded focus:ring focus:ring-blue-200" required>
                         <option value="">Seleccione una organización...</option>
                         @if(isset($organizations) && $organizations->count())
@@ -43,6 +45,7 @@
                                 </option>
                             @endforeach
                         @endif
+
                     </select>
                 </div>
 

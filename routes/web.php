@@ -9,6 +9,7 @@ use App\Domain\Organizations\Controllers\OrganizationProjectController;
 use App\Domain\Projects\Controllers\ProjectController;
 use App\Domain\Projects\Controllers\ProjectUserController;
 use App\Domain\Projects\Controllers\ProjectTaskController;
+use App\Domain\Projects\Controllers\ProjectVulnerabilityController;
 use App\Domain\Vulnerabilities\Controllers\VulnerabilityTaskController;
 use App\Domain\Tasks\Controllers\TaskController;
 use App\Http\Controllers\DashboardController;
@@ -23,6 +24,12 @@ Route::middleware([
     'verified',
 ])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Routes for comment and changeState moved here
+    Route::post('/vulnerabilities/{vulnerability}/comment', [VulnerabilityController::class, 'comment'])
+        ->name('vulnerabilities.comment');
+    Route::post('/vulnerabilities/{vulnerability}/change-state', [VulnerabilityController::class, 'changeState'])
+        ->name('vulnerabilities.change-state');
 
     Route::middleware('role:lider')->group(function () {
         Route::get('/users/{user}/roles', [UserRoleController::class, 'edit'])->name('users.roles.edit');
@@ -67,12 +74,6 @@ Route::middleware([
             
         Route::post('/vulnerabilities/{vulnerability}/tasks', [VulnerabilityTaskController::class, 'store'])
             ->name('vulnerabilities.tasks.store');
-
-        Route::post('/vulnerabilities/{vulnerability}/comment', [VulnerabilityController::class, 'comment']) // Esta se mantendrá para solo añadir comentarios
-            ->name('vulnerabilities.comment');
-        
-        Route::post('/vulnerabilities/{vulnerability}/change-state', [VulnerabilityController::class, 'changeState']) // Nueva ruta para cambio de estado
-            ->name('vulnerabilities.change-state');
 
         Route::resource('tasks', TaskController::class);
 

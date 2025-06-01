@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('vulnerabilities', function (Blueprint $table) {
             $table->id();
 
-            $table->string('title');
+            $table->text('title'); // Changed from string('title')
             $table->date('detection_date')->nullable();
-            $table->text('description')->nullable();
-            $table->string('component')->nullable();
+            $table->text('description')->nullable(); // Already text, verified
+            $table->text('component')->nullable(); // Changed from string('component')->nullable()
             $table->foreignId('type_id')->nullable()->constrained('vulnerability_types')->nullOnDelete();
             $table->string('owasp_classification')->nullable();
 
@@ -44,7 +44,7 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->index('title');
+            // $table->index('title'); // Removed index on title
             $table->index('state');
         });
     }

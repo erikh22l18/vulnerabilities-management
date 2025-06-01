@@ -35,7 +35,7 @@ class TaskController extends Controller
         $viewModel = new TaskIndexViewModel(
             title: 'Tareas',
             tasks: $tasks,
-            backRoute: route('home'),
+            backRoute: route('dashboard'),
             createRoute: route('tasks.create'),
             can_create: Auth::user()->can('crear tareas'),
 

@@ -106,6 +106,11 @@ class ProjectPolicy
         if (!$user->hasPermissionTo('ver vulnerabilidades')) {
             return false;
         }
+
+        // Verifica si el proyecto está activo
+        if ($project->status !== 'active') {
+            return false;
+        }
         
         // Admin y líderes pueden ver todas las vulnerabilidades de cualquier proyecto
         if ($user->hasRole(['admin', 'lider'])) {
@@ -123,6 +128,11 @@ class ProjectPolicy
     {
         // Verifica permiso básico
         if (!$user->hasPermissionTo('crear vulnerabilidades')) {
+            return false;
+        }
+
+        // Verifica si el proyecto está activo
+        if ($project->status !== 'active') {
             return false;
         }
         

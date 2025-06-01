@@ -210,4 +210,35 @@ class ProjectController extends Controller
         // Download the PDF with a dynamic, descriptive name.
         return $pdf->download('proyecto_' . Str::slug($project->name) . '_vulnerabilidades_' . time() . '.pdf');
     }
+
+    /**
+     * Update the status of the specified project.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Domain\Projects\Models\Project  $project
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function updateStatus(Request $request, Project $project): RedirectResponse
+    {
+        $this->authorize('update', $project); // Or a more specific 'updateStatus' permission
+
+        $validated = $request->validate([
+            'status' => 'required|string|in:active,inactive,activo,inactivo', // Add 'activo' and 'inactivo' if those are used
+        ]);
+
+        // Normalize status to 'active' or 'inactive' if 'activo'/'inactivo' are used
+        $statusToUpdate = strtolower($validated['status']);
+        if ($statusToUpdate === 'activo') {
+            $statusToUpdate = 'active';
+        } elseif ($statusToUpdate === 'inactivo') {
+            $statusToUpdate = 'inactive';
+        }
+
+
+        $project->update(['status' => $statusToUpdate]);
+
+        return redirect()->route('projects.index')->with('success', 'Estado del proyecto actualizado correctamente.');
+    }
 }

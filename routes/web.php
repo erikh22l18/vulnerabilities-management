@@ -6,6 +6,7 @@ use App\Domain\Vulnerabilities\Controllers\VulnerabilityUserController;
 use App\Http\Controllers\Admin\UserController as AdminUserController; // Changed this line
 use App\Domain\Organizations\Controllers\OrganizationController;
 use App\Domain\Organizations\Controllers\OrganizationProjectController;
+use App\Domain\Organizations\Controllers\OrganizationUserController;
 use App\Domain\Projects\Controllers\ProjectController;
 use App\Domain\Projects\Controllers\ProjectUserController;
 use App\Domain\Projects\Controllers\ProjectTaskController;
@@ -109,6 +110,8 @@ Route::middleware([
         // Nueva ruta para el informe PDF del proyecto
         Route::get('/projects/{project}/report/pdf', [ProjectController::class, 'generateProjectReportPDF'])
             ->name('projects.report.pdf');
+
+        Route::put('/projects/{project}/status', [\App\Domain\Projects\Controllers\ProjectController::class, 'updateStatus'])->name('projects.updateStatus');
 
         Route::resource('admin/users', AdminUserController::class)->names('admin.users'); // Changed this line
     });

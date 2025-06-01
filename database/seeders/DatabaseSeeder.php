@@ -168,7 +168,7 @@ class DatabaseSeeder extends Seeder
                     'general_objective' => 'Proyecto activo para dashboard de líder y miembro.',
                     'status' => 'active',
                     // 'lider_id' => $leaderUser->id, // Removed direct lider_id assignment
-                    'created_by' => $adminUser->id,
+                    // 'created_by' => $adminUser->id, // Removed created_by assignment
                 ]
             );
             $project1_org1->users()->syncWithoutDetaching([$leaderUser->id, $memberUser->id]);
@@ -184,7 +184,7 @@ class DatabaseSeeder extends Seeder
                     'general_objective' => 'Proyecto inactivo para dashboard de líder y miembro.',
                     'status' => 'inactive',
                     // 'lider_id' => $leaderUser->id, // Removed direct lider_id assignment
-                    'created_by' => $adminUser->id,
+                    // 'created_by' => $adminUser->id, // Removed created_by assignment
                 ]
             );
             $project2_org1->users()->syncWithoutDetaching([$leaderUser->id, $memberUser->id]);

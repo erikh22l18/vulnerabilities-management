@@ -110,6 +110,19 @@ class ProjectController extends Controller
     }
 
     /**
+     * Display the specified project.
+     *
+     * @param  \App\Domain\Projects\Models\Project  $project
+     * @return \Illuminate\View\View
+     */
+    public function show(Project $project): View
+    {
+        $this->authorize('view', $project); // Assuming a ProjectPolicy exists with a 'view' method
+        $project->load('organization', 'users', 'vulnerabilities'); // Eager load some common relations
+        return view('projects.show', compact('project'));
+    }
+
+    /**
      * Show the form for editing the specified project.
      *
      * @param \App\Domain\Projects\Models\Project $project The project model instance.

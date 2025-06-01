@@ -87,9 +87,10 @@
                     <div class="mb-4">
                         <x-label for="status" value="Estado" />
                         <select id="status" name="status" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
-                            <option value="Pendiente" {{ old('status', $task->status) == 'Pendiente' ? 'selected' : '' }}>Pendiente</option>
-                            <option value="En Progreso" {{ old('status', $task->status) == 'En Progreso' ? 'selected' : '' }}>En Progreso</option>
-                            <option value="Completada" {{ old('status', $task->status) == 'Completada' ? 'selected' : '' }}>Completada</option>
+                            <option value="pendiente" {{ old('status', $task->status) == 'pendiente' ? 'selected' : '' }}>Pendiente</option>
+                            <option value="en_progreso" {{ old('status', $task->status) == 'en_progreso' ? 'selected' : '' }}>En Progreso</option>
+                            <option value="completada" {{ old('status', $task->status) == 'completada' ? 'selected' : '' }}>Completada</option>
+                            <option value="cancelada" {{ old('status', $task->status) == 'cancelada' ? 'selected' : '' }}>Cancelada</option>
                         </select>
                     </div>
 

@@ -26,6 +26,34 @@
 - **Visualización del número de proyectos por organización:** IMPLEMENTADO.
 - **Visualización del total de vulnerabilidades por proyecto y su porcentaje de tratamiento:** IMPLEMENTADO (cálculo de % de tratamiento corregido para usar estados 'Resuelta'/'Cerrada').
 
+### RQF5-A - Adecuación del Dashboard por Perfil
+**Nombre:** Adecuación del Dashboard por Perfil
+**Descripción:**
+El sistema debe adaptar dinámicamente la visualización del dashboard según el rol del usuario autenticado (Admin, Líder de Proyecto, Miembro de Proyecto), mostrando únicamente la información relevante, autorizada y necesaria para su función.
+
+**Especificaciones:**
+- **Admin:**
+    - Accede a todas las métricas globales y detalladas por organización y proyecto.
+    - Visualiza indicadores de rendimiento por usuario (global).
+    - Puede filtrar por cualquier organización, proyecto, usuario y rango de tiempo.
+    - Acceso a alertas globales (riesgos críticos, retrasos, reabrimientos, etc.).
+- **Líder de Proyecto:**
+    - Visualiza métricas globales y detalladas para los proyectos y organizaciones a los que está asociado.
+    - Visualiza indicadores de rendimiento por usuario dentro de su ámbito de proyectos/organización.
+    - Puede filtrar por sus organizaciones, proyectos y rango de tiempo.
+    - Acceso a alertas relevantes para sus proyectos/organización.
+- **Miembro de Proyecto:**
+    - Visualiza únicamente los proyectos donde está asignado.
+    *   Visualiza sus tareas asignadas y su avance.
+    *   Visualiza vulnerabilidades asignadas y su estado.
+    *   No tiene acceso a métricas organizacionales ni datos de otros usuarios (excepto información compartida en tareas/vulnerabilidades).
+    *   Puede recibir alertas personales (vulnerabilidad por vencer, nuevas asignaciones).
+- El contenido del dashboard estará filtrado por el perfil y los permisos del usuario.
+- Los datos sensibles o estratégicos se ocultarán para roles que no tengan privilegios de acceso.
+- El diseño del dashboard será responsive y modular para facilitar la personalización por tipo de usuario.
+- Se incluirá lógica de control de acceso en el backend para garantizar la separación de visibilidad.
+- **Estado:** IMPLEMENTADO (Estructura base con servicios y vistas parciales por rol; métricas iniciales y placeholders para alertas).
+
 ### RQF6 - Control de estados de una vulnerabilidad
 - **Flujo de estados:** `Detectada` -> `En tratamiento` -> `Resuelta` -> `Cerrada` (estado "Asignada" eliminado del flujo principal según feedback). IMPLEMENTADO.
 - **No se puede modificar una vez cerrada (con matices):** IMPLEMENTADO (modificación de campos principales impedida; cambio de estado a reapertura requiere justificación).

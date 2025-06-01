@@ -1,6 +1,4 @@
-@extends('layouts.admin')
-
-@section('content')
+<x-admin-layout>
     <div class="container">
         <h1>User Details</h1>
 
@@ -39,4 +37,4 @@
 
         <a href="{{ route('admin.users.index') }}" class="btn btn-primary">Back to List</a>
     </div>
-@endsection
+</x-admin-layout>

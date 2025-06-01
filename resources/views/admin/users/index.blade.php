@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-admin-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Gestión de Usuarios') }}
@@ -84,9 +84,7 @@
 
                             @if ($users->hasPages())
                             <div class="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between">
-                                <span class="text-xs xs:text-sm text-gray-900">
-                                   Mostrando {{ $users->firstItem() }} a {{ $users->lastItem() }} de {{ $users->total() }} resultados
-                                </span>
+                                
                                 <div class="inline-flex mt-2 xs:mt-0">
                                     {{ $users->links() }}
                                 </div>
@@ -98,4 +96,4 @@
             </div>
         </div>
     </div>
-@endsection
+</x-admin-layout>

@@ -167,7 +167,7 @@ class DatabaseSeeder extends Seeder
                     'identifier' => 'ORG1-PAD',
                     'general_objective' => 'Proyecto activo para dashboard de líder y miembro.',
                     'status' => 'active',
-                    'lider_id' => $leaderUser->id,
+                    // 'lider_id' => $leaderUser->id, // Removed direct lider_id assignment
                     'created_by' => $adminUser->id,
                 ]
             );
@@ -183,7 +183,7 @@ class DatabaseSeeder extends Seeder
                     'identifier' => 'ORG1-PID',
                     'general_objective' => 'Proyecto inactivo para dashboard de líder y miembro.',
                     'status' => 'inactive',
-                    'lider_id' => $leaderUser->id,
+                    // 'lider_id' => $leaderUser->id, // Removed direct lider_id assignment
                     'created_by' => $adminUser->id,
                 ]
             );

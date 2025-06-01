@@ -9,6 +9,7 @@ use App\Domain\Organizations\Controllers\OrganizationProjectController;
 use App\Domain\Projects\Controllers\ProjectController;
 use App\Domain\Projects\Controllers\ProjectUserController;
 use App\Domain\Projects\Controllers\ProjectTaskController;
+use App\Domain\Projects\Controllers\ProjectVulnerabilityController;
 use App\Domain\Vulnerabilities\Controllers\VulnerabilityTaskController;
 use App\Domain\Tasks\Controllers\TaskController;
 use App\Http\Controllers\DashboardController;

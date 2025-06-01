@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $identifier Unique identifier for the project.
  * @property string $name Name of the project.
  * @property string|null $general_objective General objective of the project.
+ * @property string|null $status Status of the project (e.g., active, inactive, completed).
  * @property int $organization_id ID of the organization this project belongs to.
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -43,6 +44,7 @@ class Project extends Model
         'name', // Full name of the project
         'general_objective', // Main goal or objective of the project
         'organization_id', // Foreign key for the associated organization
+        'status', // Status of the project (e.g., active, inactive)
     ];
 
     /**

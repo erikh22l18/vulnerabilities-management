@@ -43,9 +43,9 @@
                                 @foreach ($columns as $column => $displayName)
                                     <td class="px-5 py-3 border-b border-gray-200 bg-white text-sm">
                                         <p class="text-gray-900 whitespace-no-wrap">
-                                            @if ($key === 'organization')
+                                            @if ($column === 'organization.name') {{-- Adjusted to match common column definition --}}
                                                 {{ $user->organization->name ?? 'N/A' }}
-                                            @elseif ($key === 'roles')
+                                            @elseif ($column === 'roles.0.name') {{-- Adjusted to match common column definition --}}
                                                 {{ $user->roles->pluck('name')->join(', ') }}
                                             @else
                                                 {{ $user->$column }}

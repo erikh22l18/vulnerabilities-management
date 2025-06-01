@@ -97,6 +97,7 @@
                                                 </div>
                                             </a>
 
+                                            @can('update', $vulnerability)
                                             <a href="{{ route('vulnerabilities.edit', $vulnerability) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                 <div class="flex items-center">
                                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -105,7 +106,9 @@
                                                     Editar
                                                 </div>
                                             </a>
+                                            @endcan
 
+                                            @can('assignUser', $vulnerability)
                                             <a href="{{ route('vulnerabilities.users.index', $vulnerability) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                 <div class="flex items-center">
                                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -114,7 +117,9 @@
                                                     Usuarios Asignados
                                                 </div>
                                             </a>
+                                            @endcan
 
+                                            @can('crearTareas', $vulnerability)
                                             <!-- tareas -->
                                             <a href="{{ route('vulnerabilities.tasks.index', $vulnerability) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                 <div class="flex items-center">
@@ -124,7 +129,9 @@
                                                     Tareas
                                                 </div>
                                             </a>
+                                            @endcan
 
+                                            @can('delete', $vulnerability)
                                             <form action="{{ route('vulnerabilities.destroy', $vulnerability) }}" method="POST" class="block">
                                                 @csrf
                                                 @method('DELETE')
@@ -139,6 +146,7 @@
                                                     </div>
                                                 </button>
                                             </form>
+                                            @endcan
                                         </div>
                                     </div>
                                 </td>

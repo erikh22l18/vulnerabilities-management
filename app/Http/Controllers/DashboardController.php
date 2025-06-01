@@ -3,55 +3,53 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Domain\Organizations\Models\Organization;
-use App\Domain\Projects\Models\Project;
-use Illuminate\View\View; // For type hinting views
+use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
+use App\Domain\Dashboard\Services\AdminDashboardService;
+use App\Domain\Dashboard\Services\LiderDashboardService;
+use App\Domain\Dashboard\Services\MiembroDashboardService;
 
-/**
- * Controller for handling the main dashboard display.
- * Aggregates data from various parts of the application to provide an overview.
- *
- * @package App\Http\Controllers
- */
 class DashboardController extends Controller
 {
-    /**
-     * Display the main dashboard.
-     *
-     * Fetches organizations with their project counts, and projects with vulnerability statistics
-     * (total vulnerabilities, treated vulnerabilities, and treatment percentage).
-     * This data is then passed to the dashboard view.
-     *
-     * @return \Illuminate\View\View Returns the dashboard view with aggregated data.
-     */
-    public function index(): View
+    protected AdminDashboardService $adminDashboardService;
+    protected LiderDashboardService $liderDashboardService;
+    protected MiembroDashboardService $miembroDashboardService;
+
+    public function __construct(
+        AdminDashboardService $adminDashboardService,
+        LiderDashboardService $liderDashboardService,
+        MiembroDashboardService $miembroDashboardService
+    ) {
+        $this->adminDashboardService = $adminDashboardService;
+        $this->liderDashboardService = $liderDashboardService;
+        $this->miembroDashboardService = $miembroDashboardService;
+    }
+
+    public function index(Request $request): View
     {
-        // Fetch all organizations and count their associated projects.
-        $orgs = Organization::withCount('projects')->get();
+        $user = Auth::user();
+        $data = [];
+        $dashboard_type = 'default'; // Fallback dashboard type
 
-        // Fetch all projects and count total vulnerabilities and "treated" vulnerabilities.
-        // "Treated" vulnerabilities are those in 'Resuelta' (Resolved) or 'Cerrada' (Closed) states.
-        $projects = Project::withCount([
-            'vulnerabilities', // Counts all vulnerabilities for each project
-            'vulnerabilities as treated_vulnerabilities_count' => function ($query) {
-                // Counts vulnerabilities that are considered treated
-                $query->whereIn('state', ['Resuelta', 'Cerrada']);
-            }
-        ])->get();
-
-        // Calculate the treatment percentage for each project.
-        foreach ($projects as $project) {
-            if ($project->vulnerabilities_count > 0) {
-                // Calculate percentage: (treated / total) * 100, rounded to 2 decimal places.
-                $project->treatment_percentage = round(($project->treated_vulnerabilities_count / $project->vulnerabilities_count) * 100, 2);
-            } else {
-                // If a project has no vulnerabilities, its treatment percentage is 0.
-                // Alternatively, this could be set to 'N/A' or null depending on display preference.
-                $project->treatment_percentage = 0;
-            }
+        // Determine role and fetch data accordingly
+        // Assumes primary role for simplicity. Order matters if user can have multiple roles.
+        if ($user->hasRole('admin')) {
+            $data = $this->adminDashboardService->getData($request);
+            $dashboard_type = 'admin';
+        } elseif ($user->hasRole('lider')) {
+            $data = $this->liderDashboardService->getData($user, $request);
+            $dashboard_type = 'lider';
+        } elseif ($user->hasRole('miembro')) {
+            $data = $this->miembroDashboardService->getData($user, $request);
+            $dashboard_type = 'miembro';
+        } else {
+            // Handle users with no specific dashboard role or a default view
+            // For now, $data remains empty, or you can define default data.
         }
 
-        // Pass the aggregated data to the 'dashboard' view.
-        return view('dashboard', compact('orgs', 'projects'));
+        return view('dashboard', [
+            'service_data' => $data,
+            'dashboard_type' => $dashboard_type
+        ]);
     }
 }

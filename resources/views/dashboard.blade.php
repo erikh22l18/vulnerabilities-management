@@ -23,10 +23,38 @@
                             <p class="text-gray-500 text-sm">Gestiona vulnerabilidades y usuarios desde este panel.</p>
                         </div>
                     </div>
-                    <x-welcome />
-                    <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <a href="{{ route('vulnerabilities.index') }}" class="p-6 bg-blue-50 rounded-lg shadow flex items-center hover:bg-blue-100 transition">
-                            <svg class="w-8 h-8 text-blue-400 mr-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+
+                    {{-- Role-Specific Dashboard Section --}}
+                    <div class="mt-8">
+                        @if(isset($dashboard_type) && isset($service_data))
+                            @if($dashboard_type === 'admin')
+                                @include('dashboard.partials.admin-dashboard', ['data' => $service_data])
+                            @elseif($dashboard_type === 'lider')
+                                @include('dashboard.partials.lider-dashboard', ['data' => $service_data])
+                            @elseif($dashboard_type === 'miembro')
+                                @include('dashboard.partials.miembro-dashboard', ['data' => $service_data])
+                            @elseif($dashboard_type === 'default')
+                                {{-- Default content if user has no specific dashboard role but is authenticated --}}
+                                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6 md:p-8">
+                                    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Dashboard General</h2>
+                                    <p>Bienvenido al panel general. Seleccione una opción del menú para comenzar.</p>
+                                    {{-- You might include some very generic info here or leave it minimal --}}
+                                </div>
+                            @else
+                                <p class="text-red-500">Error: Tipo de dashboard desconocido.</p>
+                            @endif
+                        @else
+                            <p class="text-red-500">Error: No se pudo cargar la información del dashboard.</p> {{-- Fallback if dashboard_type or service_data isn't set --}}
+                        @endif
+                    </div>
+
+                    {{-- Existing generic links and summary can remain below or be removed/integrated into role dashboards later --}}
+                    {{-- For now, keeping them to avoid breaking existing view structure completely --}}
+                    <div class="mt-8 border-t pt-8"> {{-- Added border and padding for separation --}}
+                        <h2 class="text-xl font-bold text-gray-700 mb-4">Accesos Rápidos Generales</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <a href="{{ route('vulnerabilities.index') }}" class="p-6 bg-blue-50 rounded-lg shadow flex items-center hover:bg-blue-100 transition">
+                                <svg class="w-8 h-8 text-blue-400 mr-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2a4 4 0 014-4h4m0 0V7a4 4 0 00-4-4H7a4 4 0 00-4 4v10a4 4 0 004 4h4" />
                             </svg>
                             <div>
@@ -66,8 +94,16 @@
                         </a>
                         @endunlessrole
                     </div>
-                    <div class="mt-10">
-                        <h2 class="text-xl font-bold text-gray-700 mb-4">Resumen de Estado de Vulnerabilidades</h2>
+
+                    {{-- The x-welcome component might be part of a very generic dashboard, or removed if role dashboards are primary --}}
+                    {{-- For now, let's comment it out if the role dashboards are meant to be the main content --}}
+                    {{-- <x-welcome /> --}}
+
+                    <div class="mt-10"> {{-- This was the original "Resumen de Estado de Vulnerabilidades" section --}}
+                        {{-- This content might be duplicative if admin dashboard shows similar global stats --}}
+                        {{-- Consider if this section is still needed globally or if its elements move into specific role dashboards --}}
+                        {{-- For now, it will remain, potentially showing below the role-specific dashboard partial --}}
+                        <h2 class="text-xl font-bold text-gray-700 mb-4">Resumen Global (Datos Anteriores)</h2>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div class="bg-purple-50 p-6 rounded-lg shadow">
                                 <h3 class="font-semibold text-purple-700 mb-2">Proyectos por Organización</h3>

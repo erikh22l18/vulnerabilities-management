@@ -10,14 +10,16 @@
                         @endif
                     </div>
 
-                    @if ($viewModel->can_create)
-                        <a href="{{ $viewModel->createRoute }}"
-                           class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 transition inline-flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                            </svg>
-                            Crear Tarea
-                        </a>
+                    @if(isset($show_create_task_button) && $show_create_task_button)
+                        @can('create', \App\Domain\Tasks\Models\Task::class) {{-- General permission check --}}
+                            <a href="{{ route('tasks.create') }}" {{-- Use generic route, specific context chosen in create form --}}
+                               class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 transition inline-flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                Crear Tarea
+                            </a>
+                        @endcan
                     @endif
                 </div>
 

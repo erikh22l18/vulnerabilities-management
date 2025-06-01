@@ -20,6 +20,8 @@ return new class extends Migration
             $table->foreignId('organization_id')->constrained()->onDelete('cascade');
 
             $table->timestamps();
+
+            $table->index('name');
         });
     }
 

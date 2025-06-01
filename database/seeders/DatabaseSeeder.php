@@ -132,6 +132,118 @@ class DatabaseSeeder extends Seeder
         }
     
 
-        $member->projects()->attach($project);
+        // $member->projects()->attach($project); // This line seems out of context or erroneous, removing.
+
+        // --- Start of Targeted Data Seeding for Dashboards ---
+
+        $adminUser = User::where('email', 'admin@example.com')->first();
+        $leaderUser = User::where('email', 'leader@example.com')->first();
+        $memberUser = User::where('email', 'member@example.com')->first();
+
+        $firstVulnerabilityType = VulnerabilityType::first();
+        $firstVulnerabilityCategoryId = 1; // Assuming category with ID 1 exists from VulnerabilityCategorySeeder
+
+        // Ensure a specific organization for targeted seeding
+        $org1 = Organization::firstOrCreate(
+            ['name' => 'Organización Dashboard Target'],
+            ['location' => 'Locación Específica']
+        );
+
+        if ($leaderUser && $org1) {
+            $leaderUser->organization_id = $org1->id;
+            $leaderUser->save();
+        }
+        if ($memberUser && $org1) {
+            $memberUser->organization_id = $org1->id;
+            $memberUser->save();
+        }
+
+        // Create a specific active project for the leader and member
+        $project1_org1 = null;
+        if ($org1 && $leaderUser) {
+            $project1_org1 = Project::updateOrCreate(
+                ['name' => 'Proyecto Activo (Dashboard)', 'organization_id' => $org1->id],
+                [
+                    'identifier' => 'ORG1-PAD',
+                    'general_objective' => 'Proyecto activo para dashboard de líder y miembro.',
+                    'status' => 'active',
+                    'lider_id' => $leaderUser->id,
+                    'created_by' => $adminUser->id,
+                ]
+            );
+            $project1_org1->users()->syncWithoutDetaching([$leaderUser->id, $memberUser->id]);
+        }
+
+        // Create a specific inactive project for the leader and member
+        $project2_org1 = null;
+        if ($org1 && $leaderUser) {
+            $project2_org1 = Project::updateOrCreate(
+                ['name' => 'Proyecto Inactivo (Dashboard)', 'organization_id' => $org1->id],
+                [
+                    'identifier' => 'ORG1-PID',
+                    'general_objective' => 'Proyecto inactivo para dashboard de líder y miembro.',
+                    'status' => 'inactive',
+                    'lider_id' => $leaderUser->id,
+                    'created_by' => $adminUser->id,
+                ]
+            );
+            $project2_org1->users()->syncWithoutDetaching([$leaderUser->id, $memberUser->id]);
+        }
+
+        // Vulnerabilities for Project 1 (Active)
+        if ($project1_org1 && $leaderUser && $memberUser && $adminUser && $firstVulnerabilityType) {
+            // Open vuln for member
+            $vuln1_p1 = Vulnerability::create([
+                'title' => 'VULN-P1-MEMBER-OPEN', 'project_id' => $project1_org1->id, 'state' => 'Detectada',
+                'assigned_user_id' => $memberUser->id, 'created_by' => $adminUser->id,
+                'type_id' => $firstVulnerabilityType->id, 'category_id' => $firstVulnerabilityCategoryId,
+                'description' => 'Desc', 'severity_level' => 'Alto', 'priority' => 'Alta'
+            ]);
+            // Open vuln for leader
+            $vuln2_p1 = Vulnerability::create([
+                'title' => 'VULN-P1-LEADER-OPEN', 'project_id' => $project1_org1->id, 'state' => 'En tratamiento',
+                'assigned_user_id' => $leaderUser->id, 'created_by' => $adminUser->id,
+                'type_id' => $firstVulnerabilityType->id, 'category_id' => $firstVulnerabilityCategoryId,
+                'description' => 'Desc', 'severity_level' => 'Medio', 'priority' => 'Media'
+            ]);
+            // Closed vuln
+            $vuln3_p1 = Vulnerability::create([
+                'title' => 'VULN-P1-CLOSED', 'project_id' => $project1_org1->id, 'state' => 'Cerrada',
+                'assigned_user_id' => $memberUser->id, 'created_by' => $adminUser->id,
+                'type_id' => $firstVulnerabilityType->id, 'category_id' => $firstVulnerabilityCategoryId,
+                'description' => 'Desc', 'severity_level' => 'Bajo', 'priority' => 'Baja'
+            ]);
+
+            // Tasks for Project 1
+            Task::create([
+                'title' => 'Tarea P1-V1 (Miembro)', 'vulnerability_id' => $vuln1_p1->id, 'project_id' => $project1_org1->id,
+                'assigned_to' => $memberUser->id, 'created_by' => $adminUser->id, 'status' => 'pendiente', 'priority' => 'alta'
+            ]);
+            Task::create([
+                'title' => 'Tarea P1-V2 (Líder)', 'vulnerability_id' => $vuln2_p1->id, 'project_id' => $project1_org1->id,
+                'assigned_to' => $leaderUser->id, 'created_by' => $adminUser->id, 'status' => 'en_progreso', 'priority' => 'media'
+            ]);
+            Task::create([ // Task for closed vulnerability
+                'title' => 'Tarea P1-V3 (Cerrada)', 'vulnerability_id' => $vuln3_p1->id, 'project_id' => $project1_org1->id,
+                'assigned_to' => $memberUser->id, 'created_by' => $adminUser->id, 'status' => 'completada', 'priority' => 'baja'
+            ]);
+        }
+
+        // Vulnerabilities for Project 2 (Inactive)
+        if ($project2_org1 && $memberUser && $adminUser && $firstVulnerabilityType) {
+            $vuln1_p2 = Vulnerability::create([
+                'title' => 'VULN-P2-MEMBER-OPEN (Inactive Proj)', 'project_id' => $project2_org1->id, 'state' => 'Detectada',
+                'assigned_user_id' => $memberUser->id, 'created_by' => $adminUser->id,
+                'type_id' => $firstVulnerabilityType->id, 'category_id' => $firstVulnerabilityCategoryId,
+                'description' => 'Desc', 'severity_level' => 'Alto', 'priority' => 'Alta'
+            ]);
+
+            // Task for Project 2 (Inactive)
+            Task::create([
+                'title' => 'Tarea P2-V1 (Miembro, Inactive Proj)', 'vulnerability_id' => $vuln1_p2->id, 'project_id' => $project2_org1->id,
+                'assigned_to' => $memberUser->id, 'created_by' => $adminUser->id, 'status' => 'pendiente', 'priority' => 'alta'
+            ]);
+        }
+        // --- End of Targeted Data Seeding ---
     }
 }

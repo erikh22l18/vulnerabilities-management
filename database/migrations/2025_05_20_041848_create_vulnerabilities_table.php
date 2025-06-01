@@ -43,6 +43,9 @@ return new class extends Migration
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
 
             $table->timestamps();
+
+            $table->index('title');
+            $table->index('state');
         });
     }
 

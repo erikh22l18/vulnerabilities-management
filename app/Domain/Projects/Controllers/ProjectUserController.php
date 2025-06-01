@@ -50,10 +50,15 @@ class ProjectUserController extends Controller
         // 'asignarUsuarios' should be a defined ability in ProjectPolicy.
         $this->authorize('asignarUsuarios', $project);
 
-        // Fetch users who are not already part of this project.
-        $availableUsers = User::whereDoesntHave('projects', function ($query) use ($project) {
-            $query->where('project_id', $project->id);
-        })->orderBy('name')->get();
+        $organizationId = $project->organization_id;
+
+        // Fetch users from the same organization who are not already part of this project.
+        $availableUsers = User::where('organization_id', $organizationId)
+            ->whereDoesntHave('projects', function ($query) use ($project) {
+                $query->where('projects.id', $project->id); // Check against the id column of the projects table
+            })
+            ->orderBy('name')
+            ->get();
 
         return view('projects.users.create', [
             'project' => $project,

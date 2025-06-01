@@ -21,6 +21,32 @@
                 </div>
 
                 <div class="mt-4">
+                    <x-label for="identification" value="Identificación (Cédula/Pasaporte)" class="text-gray-700" />
+                    <x-input id="identification" class="block mt-1 w-full border-gray-300 rounded focus:ring focus:ring-blue-200"
+                        type="text" name="identification" :value="old('identification')" autocomplete="off" />
+                </div>
+
+                <div class="mt-4">
+                    <x-label for="area" value="Área/Departamento" class="text-gray-700" />
+                    <x-input id="area" class="block mt-1 w-full border-gray-300 rounded focus:ring focus:ring-blue-200"
+                        type="text" name="area" :value="old('area')" autocomplete="off" />
+                </div>
+
+                <div class="mt-4">
+                    <x-label for="organization_id" value="Organización" class="text-gray-700" />
+                    <select name="organization_id" id="organization_id" class="block mt-1 w-full border-gray-300 rounded focus:ring focus:ring-blue-200" required>
+                        <option value="">Seleccione una organización...</option>
+                        @if(isset($organizations) && $organizations->count())
+                            @foreach($organizations as $organization)
+                                <option value="{{ $organization->id }}" {{ old('organization_id') == $organization->id ? 'selected' : '' }}>
+                                    {{ $organization->name }}
+                                </option>
+                            @endforeach
+                        @endif
+                    </select>
+                </div>
+
+                <div class="mt-4">
                     <x-label for="email" value="Correo electrónico" class="text-gray-700" />
                     <x-input id="email" class="block mt-1 w-full border-gray-300 rounded focus:ring focus:ring-blue-200" 
                         type="email" name="email" :value="old('email')" required autocomplete="username" />

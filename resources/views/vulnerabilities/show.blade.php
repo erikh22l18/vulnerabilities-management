@@ -21,15 +21,16 @@
                             <span class="inline-block px-2 py-1 rounded-full text-xs font-semibold
                                 {{ $vulnerability->status === 'Detectada' ? 'bg-yellow-100 text-yellow-700' : '' }}
                                 {{ $vulnerability->status === 'En análisis' ? 'bg-blue-100 text-blue-700' : '' }}
+                                {{ $vulnerability->state === App\Domain\Vulnerabilities\Models\Vulnerability::STATE_ASIGNADA ? 'bg-purple-100 text-purple-700' : '' }}
                                 {{ $vulnerability->status === 'En tratamiento' ? 'bg-orange-100 text-orange-700' : '' }}
                                 {{ $vulnerability->status === 'Resuelta' ? 'bg-green-100 text-green-700' : '' }}
                                 {{ $vulnerability->status === 'Cerrada' ? 'bg-gray-200 text-gray-600' : '' }}">
-                                {{ $vulnerability->status }}
+                                {{ $vulnerability->state }} {{-- Consistent use of 'state' property --}}
                             </span>
                         </p>
                         <p class="mb-2"><span class="font-semibold text-gray-700">Proyecto:</span> {{ $vulnerability->project->name ?? '-' }}</p>
                         <p class="mb-2"><span class="font-semibold text-gray-700">Componente:</span> {{ $vulnerability->component }}</p>
-                        <p class="mb-2"><span class="font-semibold text-gray-700">Tipo:</span> {{ $vulnerability->type }}</p>
+                        <p class="mb-2"><span class="font-semibold text-gray-700">Tipo:</span> {{ $vulnerability->type->name ?? ($vulnerability->type ?? '-') }}</p> {{-- Access name property of type relation --}}
                         <p class="mb-2"><span class="font-semibold text-gray-700">Clasificación OWASP:</span> {{ $vulnerability->owasp_classification }}</p>
                         <p class="mb-2"><span class="font-semibold text-gray-700">Vector CVSS:</span> {{ $vulnerability->cvss_vector }}</p>
                         <p class="mb-2"><span class="font-semibold text-gray-700">Puntaje CVSS:</span> {{ $vulnerability->cvss_score }}</p>

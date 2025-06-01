@@ -39,9 +39,7 @@ class CreateNewUser implements CreatesNewUsers
         ]);
 
         // Assign default role
-        if ($user) {
-            $user->assignRole('miembro');
-        }
+        $user->assignRole('miembro');
 
         return $user;
     }

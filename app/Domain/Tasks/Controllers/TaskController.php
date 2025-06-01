@@ -93,7 +93,7 @@ class TaskController extends Controller
             'assigned_to' => 'nullable|exists:users,id',
             'due_date' => 'nullable|date',
             'priority' => 'required|string|in:Baja,Media,Alta,Crítica',
-            'status' => 'required|string|in:Pendiente,En Progreso,Completada',
+            'status' => 'required|string|in:pendiente,en_progreso,completada,cancelada',
         ]);
 
         $validatedData['created_by'] = auth()->id();
@@ -154,7 +154,7 @@ class TaskController extends Controller
             'assigned_to' => 'nullable|exists:users,id',
             'due_date' => 'nullable|date',
             'priority' => 'sometimes|required|string|in:Baja,Media,Alta,Crítica',
-            'status' => 'sometimes|required|string|in:Pendiente,En Progreso,Completada',
+            'status' => 'sometimes|required|string|in:pendiente,en_progreso,completada,cancelada',
         ]);
 
         // Ensure project_id is set if vulnerability_id changes or is provided

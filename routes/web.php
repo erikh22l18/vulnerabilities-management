@@ -116,8 +116,8 @@ Route::middleware([
         Route::resource('admin/users', AdminUserController::class)->names('admin.users'); // Changed this line
     });
 
-    Route::resource(('projects'), ProjectController::class)
-        ->except(['show']);
+    Route::resource(('projects'), ProjectController::class);
+        // ->except(['show']); // 'show' route is now enabled
     Route::get('/projects/{project}/vulnerabilities', [ProjectVulnerabilityController::class, 'index'])
         ->name('projects.vulnerabilities.index');
 

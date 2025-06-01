@@ -10,114 +10,117 @@
                         @endif
                     </div>
 
-                    @if($viewModel->can_create)
-                        <a href="{{ $viewModel->createRoute }}" 
+                    @can('create', App\Domain\Tasks\Models\Task::class)
+                        <a href="{{ route('tasks.create') }}"
                            class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 transition inline-flex items-center">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                             </svg>
-                            Nueva Tarea
+                            Crear Tarea
                         </a>
-                    @endif
+                    @endcan
                 </div>
 
                 <div class="overflow-x-auto min-h-[400px]">
                     <table class="w-full bg-white shadow rounded">
                         <thead>
-                            <tr class="bg-blue-100 text-left">
-                                <th class="px-4 py-2">Título</th>
-                                @if(!$viewModel->context || $viewModel->context !== 'project')
-                                    <th class="px-4 py-2">Proyecto</th>
-                                @endif
-                                @if(!$viewModel->context || $viewModel->context !== 'vulnerability')
-                                    <th class="px-4 py-2">Vulnerabilidad</th>
-                                @endif
-                                <th class="px-4 py-2">Estado</th>
-                                <th class="px-4 py-2">Prioridad</th>
-                                <th class="px-4 py-2">Asignado a</th>
-                                <th class="px-4 py-2">Fecha límite</th>
-                                <th class="px-4 py-2">Acciones</th>
+                            <tr class="bg-gray-100 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">
+                                <th class="px-4 py-3">Título</th>
+                                <th class="px-4 py-3">Vulnerabilidad</th>
+                                <th class="px-4 py-3">Proyecto</th>
+                                <th class="px-4 py-3">Asignado A</th>
+                                <th class="px-4 py-3">Estado</th>
+                                <th class="px-4 py-3">Prioridad</th>
+                                <th class="px-4 py-3">Fecha Límite</th>
+                                <th class="px-4 py-3">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="text-gray-700">
                             @forelse ($viewModel->tasks as $task)
-                                <tr class="border-b hover:bg-blue-50 transition">
-                                    <td class="px-4 py-2">{{ $task->title }}</td>
-                                    @if(!$viewModel->context || $viewModel->context !== 'project')
-                                        <td class="px-4 py-2">{{ $task->project->name }}</td>
-                                    @endif
-                                    @if(!$viewModel->context || $viewModel->context !== 'vulnerability')
-                                        <td class="px-4 py-2">{{ $task->vulnerability->title }}</td>
-                                    @endif
-                                    <td class="px-4 py-2">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                            @switch($task->status)
-                                                @case('completada')
-                                                    bg-green-100 text-green-800
-                                                    @break
-                                                @case('en_progreso')
-                                                    bg-blue-100 text-blue-800
-                                                    @break
-                                                @case('cancelada')
-                                                    bg-red-100 text-red-800
-                                                    @break
-                                                @default
-                                                    bg-yellow-100 text-yellow-800
-                                            @endswitch">
-                                            {{ ucfirst(str_replace('_', ' ', $task->status)) }}
-                                        </span>
+                                <tr class="border-b hover:bg-gray-50 transition">
+                                    <td class="px-4 py-3">{{ $task->title }}</td>
+                                    <td class="px-4 py-3">
+                                        @if($task->vulnerability)
+                                            <a href="{{ route('vulnerabilities.show', $task->vulnerability_id) }}" class="text-blue-600 hover:underline">
+                                                {{ Str::limit($task->vulnerability->title, 30) }}
+                                            </a>
+                                        @else
+                                            N/A
+                                        @endif
                                     </td>
-                                    <td class="px-4 py-2">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                            @switch($task->priority)
-                                                @case('alta')
-                                                    bg-red-100 text-red-800
-                                                    @break
-                                                @case('media')
-                                                    bg-yellow-100 text-yellow-800
-                                                    @break
-                                                @default
-                                                    bg-green-100 text-green-800
-                                            @endswitch">
-                                            {{ ucfirst($task->priority) }}
-                                        </span>
+                                    <td class="px-4 py-3">
+                                        @if($task->project)
+                                            <a href="{{ route('projects.show', $task->project_id) }}" class="text-blue-600 hover:underline">
+                                                {{ Str::limit($task->project->name, 30) }}
+                                            </a>
+                                        @else
+                                            N/A
+                                        @endif
                                     </td>
-                                    <td class="px-4 py-2">
+                                    <td class="px-4 py-3">
                                         @if($task->assignee)
                                             <div class="flex items-center">
-                                                <img class="h-6 w-6 rounded-full mr-2" 
+                                                <img class="h-6 w-6 rounded-full object-cover mr-2"
                                                      src="{{ $task->assignee->profile_photo_url }}" 
                                                      alt="{{ $task->assignee->name }}">
-                                                <span class="text-sm text-gray-600">{{ $task->assignee->name }}</span>
+                                                <span class="text-sm">{{ $task->assignee->name }}</span>
                                             </div>
                                         @else
                                             <span class="text-gray-400">Sin asignar</span>
                                         @endif
                                     </td>
-                                    <td class="px-4 py-2">
+                                    <td class="px-4 py-3">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                            @switch(strtolower($task->status))
+                                                @case('completada') bg-green-100 text-green-800 @break
+                                                @case('en progreso') bg-blue-100 text-blue-800 @break
+                                                @case('pendiente') bg-yellow-100 text-yellow-800 @break
+                                                @default bg-gray-100 text-gray-800
+                                            @endswitch">
+                                            {{ ucfirst($task->status) }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                            @switch(strtolower($task->priority))
+                                                @case('crítica') bg-red-100 text-red-800 @break
+                                                @case('alta') bg-orange-100 text-orange-800 @break
+                                                @case('media') bg-yellow-100 text-yellow-800 @break
+                                                @case('baja') bg-green-100 text-green-800 @break
+                                                @default bg-gray-100 text-gray-800
+                                            @endswitch">
+                                            {{ ucfirst($task->priority) }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3">
                                         @if($task->due_date)
-                                            <span class="text-sm {{ $task->due_date->isPast() ? 'text-red-600' : 'text-gray-600' }}">
+                                            <span class="text-sm {{ $task->due_date->isPast() && $task->status !== 'Completada' ? 'text-red-600 font-semibold' : 'text-gray-600' }}">
                                                 {{ $task->due_date->format('d/m/Y') }}
                                             </span>
                                         @else
                                             <span class="text-gray-400">-</span>
                                         @endif
                                     </td>
-                                    <td class="px-4 py-2">
-                                        <div class="flex space-x-2">
-                                            <a href="{{ route('tasks.show', [ $task]) }}" 
-                                               class="text-blue-600 hover:text-blue-900">Ver</a>
-                                            @if(Auth::user()->can('editar tareas'))
-                                                <a href="{{ route('tasks.edit', $task) }}" 
-                                                   class="text-gray-600 hover:text-gray-900">Editar</a>
-                                            @endif
+                                    <td class="px-4 py-3 text-sm">
+                                        <div class="flex items-center space-x-3">
+                                            <a href="{{ route('tasks.show', $task) }}" class="text-blue-600 hover:text-blue-900">Ver</a>
+                                            @can('update', $task)
+                                                <a href="{{ route('tasks.edit', $task) }}" class="text-yellow-600 hover:text-yellow-900">Editar</a>
+                                            @endcan
+                                            @can('delete', $task)
+                                                <form action="{{ route('tasks.destroy', $task) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta tarea?');" class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-red-600 hover:text-red-900">Eliminar</button>
+                                                </form>
+                                            @endcan
                                         </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
                                     <td colspan="8" class="px-4 py-6 text-center text-gray-500">
-                                        No hay tareas registradas.
+                                        No hay tareas disponibles.
                                     </td>
                                 </tr>
                             @endforelse

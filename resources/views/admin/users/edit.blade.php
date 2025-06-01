@@ -4,7 +4,7 @@
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-8">
                 <h1 class="text-2xl font-semibold text-gray-800 mb-6">Editar Usuario</h1>
                 
-                <form action="{{ route('users.update', $user) }}" method="POST" class="space-y-6">
+                <form action="{{ route('admin.users.update', $user) }}" method="POST" class="space-y-6">
                     @csrf
                     @method('PUT')
 
@@ -55,7 +55,7 @@
                             <option value="">Seleccione un rol</option>
                             @foreach($roles as $role)
                                 <option value="{{ $role->name }}" 
-                                    {{ old('role', $currentRole?->name) == $role->name ? 'selected' : '' }}>
+                                    {{ old('role', $currentRoleName ?? '') == $role->name ? 'selected' : '' }}>
                                     {{ $role->name }}
                                 </option>
                             @endforeach
@@ -81,7 +81,7 @@
                     </div>
 
                     <div class="flex justify-between mt-6">
-                        <a href="{{ route('users.index') }}" 
+                        <a href="{{ route('admin.users.index') }}"
                            class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded shadow transition">
                             ← Volver al listado
                         </a>

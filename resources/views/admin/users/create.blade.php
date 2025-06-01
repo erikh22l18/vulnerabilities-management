@@ -3,7 +3,7 @@
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-8">
                 <h1 class="text-2xl font-semibold text-gray-800 mb-6">Registrar Usuario</h1>
-                <form method="POST" action="{{ route('users.store') }}" class="space-y-6">
+                <form method="POST" action="{{ route('admin.users.store') }}" class="space-y-6">
                     @csrf
                     <div>
                         <label for="name" class="block font-medium text-gray-700 mb-1">Nombres completos</label>

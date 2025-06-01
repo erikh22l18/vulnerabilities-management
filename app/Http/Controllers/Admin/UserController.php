@@ -84,6 +84,8 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed', // Password must be confirmed
             'organization_id' => 'required|exists:organizations,id', // Ensure organization exists
+            'identification' => 'nullable|string|max:255',
+            'area' => 'nullable|string|max:255',
             'role' => 'required|string|exists:roles,name', // Ensure role exists by name
         ]);
 
@@ -93,6 +95,8 @@ class UserController extends Controller
             'email' => $validatedData['email'],
             'password' => Hash::make($validatedData['password']), // Hash the password
             'organization_id' => $validatedData['organization_id'],
+            'identification' => $validatedData['identification'] ?? null,
+            'area' => $validatedData['area'] ?? null,
         ]);
 
         // Assign the selected role to the user.
@@ -133,7 +137,8 @@ class UserController extends Controller
         $organizations = Organization::all();
         $roles = Role::all();
         $user->load('roles'); // Ensure roles are loaded to pre-select in the form.
-        return view('admin.users.edit', compact('user', 'organizations', 'roles'));
+        $currentRoleName = $user->roles->first()?->name;
+        return view('admin.users.edit', compact('user', 'organizations', 'roles', 'currentRoleName'));
     }
 
     /**
@@ -158,6 +163,8 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:8|confirmed', // Password is optional
             'organization_id' => 'required|exists:organizations,id',
+            'identification' => 'nullable|string|max:255',
+            'area' => 'nullable|string|max:255',
             'role' => 'required|string|exists:roles,name',
         ]);
 
@@ -166,6 +173,8 @@ class UserController extends Controller
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
             'organization_id' => $validatedData['organization_id'],
+            'identification' => $validatedData['identification'] ?? null,
+            'area' => $validatedData['area'] ?? null,
         ];
 
         // If a new password is provided, hash and include it for update.

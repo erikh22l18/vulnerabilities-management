@@ -40,6 +40,34 @@
 ### RQF8 - Notificaciones automáticas (Opcional)
 - **OMITIDO** (por decisión del usuario).
 
+### RQF1.9 - Comportamiento de Entidades Inactivas/Cerradas y sus Elementos Asociados
+
+#### RQF1.9.1 - Proyectos Inactivos
+- **Gestión de Vulnerabilidades:** No se permite la creación, edición, eliminación, cambio de estado o asignación de usuarios para vulnerabilidades pertenecientes a un proyecto inactivo.
+    - El botón "Crear Vulnerabilidad" (en el contexto de un proyecto específico, como en la lista de vulnerabilidades de ese proyecto) se oculta si el proyecto está inactivo.
+- **Gestión de Tareas:** No se permite la creación, edición o eliminación de tareas asociadas a vulnerabilidades dentro de un proyecto inactivo.
+- **Visualización:**
+    - Los usuarios *pueden* ver la lista de vulnerabilidades de un proyecto inactivo (si tienen los permisos generales para ver vulnerabilidades y están asociados al proyecto según su rol).
+    - Los usuarios *pueden* ver los detalles de una vulnerabilidad específica en un proyecto inactivo.
+    - Los usuarios *pueden* ver la lista de tareas de una vulnerabilidad que pertenece a un proyecto inactivo (si tienen los permisos generales para ver tareas y están asociados al proyecto de la vulnerabilidad según su rol).
+    - Los usuarios *pueden* ver los detalles de una tarea específica cuya vulnerabilidad asociada pertenece a un proyecto inactivo.
+    - Los enlaces para acceder a la visualización de vulnerabilidades y tareas (de vulnerabilidades en proyectos inactivos) permanecen visibles y funcionales si el usuario tiene los permisos de visualización correspondientes.
+
+#### RQF1.9.2 - Vulnerabilidades Cerradas
+- **Gestión de Vulnerabilidad:** No se permite la edición de campos principales, eliminación, cambio de estado (excepto reapertura si el flujo de estados lo permite y con la debida justificación) o asignación de usuarios para una vulnerabilidad en estado "Cerrada".
+- **Gestión de Tareas:** No se permite la creación, edición o eliminación de tareas asociadas a una vulnerabilidad en estado "Cerrada".
+- **Visualización:**
+    - Los usuarios *pueden* ver los detalles de una vulnerabilidad cerrada.
+    - Los usuarios *pueden* ver la lista de tareas asociadas a una vulnerabilidad cerrada.
+    - Los usuarios *pueden* ver los detalles de una tarea específica cuya vulnerabilidad asociada está cerrada.
+    - Los enlaces para acceder a la visualización de tareas (de vulnerabilidades cerradas) permanecen visibles y funcionales si el usuario tiene los permisos de visualización correspondientes.
+
+#### RQF1.9.3 - Botón Global "Crear Tarea"
+- **Visibilidad Condicional en Índice Principal de Tareas:** El botón "Nueva Tarea" en la página principal del listado de tareas (`tasks.index`) se oculta si no existen vulnerabilidades válidas para las cuales el usuario autenticado pueda actualmente crear una tarea. Una vulnerabilidad se considera un objetivo válido para la creación de tareas si cumple con todas las siguientes condiciones:
+    - Pertenece a un proyecto en estado "activo".
+    - No está en estado "Cerrada".
+    - El usuario autenticado tiene permiso explícito para crear tareas en ella (verificado mediante la política `VulnerabilityPolicy@crearTareas`).
+
 ## 2. Requerimientos de Seguridad
 
 ### RQS1 - Autenticación y control de acceso

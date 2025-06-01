@@ -88,7 +88,9 @@
                             <p class="text-sm text-gray-500">No hay vulnerabilidades registradas para este proyecto.</p>
                         @endif
                         <div class="mt-4">
+                             @can('verVulnerabilidades', $project)
                              <a href="{{ route('projects.vulnerabilities.index', $project) }}" class="text-sm text-blue-600 hover:underline">Ver Todas las Vulnerabilidades del Proyecto</a>
+                             @endcan
                         </div>
                     </div>
 

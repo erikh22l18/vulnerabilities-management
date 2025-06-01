@@ -76,10 +76,10 @@
                     <div class="mb-4">
                         <x-label for="priority" value="Prioridad" />
                         <select id="priority" name="priority" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
-                            <option value="Baja" {{ old('priority', $task->priority) == 'Baja' ? 'selected' : '' }}>Baja</option>
-                            <option value="Media" {{ old('priority', $task->priority) == 'Media' ? 'selected' : '' }}>Media</option>
-                            <option value="Alta" {{ old('priority', $task->priority) == 'Alta' ? 'selected' : '' }}>Alta</option>
-                            <option value="Crítica" {{ old('priority', $task->priority) == 'Crítica' ? 'selected' : '' }}>Crítica</option>
+                            <option value="baja" {{ old('priority', $task->priority) == 'baja' ? 'selected' : '' }}>Baja</option>
+                            <option value="media" {{ old('priority', $task->priority) == 'media' ? 'selected' : '' }}>Media</option>
+                            <option value="alta" {{ old('priority', $task->priority) == 'alta' ? 'selected' : '' }}>Alta</option>
+                            <option value="critica" {{ old('priority', $task->priority) == 'critica' ? 'selected' : '' }}>Crítica</option>
                         </select>
                     </div>
 

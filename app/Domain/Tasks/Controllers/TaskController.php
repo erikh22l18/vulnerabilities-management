@@ -92,7 +92,7 @@ class TaskController extends Controller
             'project_id' => 'nullable|exists:projects,id', // Made nullable to allow derivation
             'assigned_to' => 'nullable|exists:users,id',
             'due_date' => 'nullable|date',
-            'priority' => 'required|string|in:Baja,Media,Alta,Crítica',
+            'priority' => 'required|string|in:baja,media,alta,critica',
             'status' => 'required|string|in:pendiente,en_progreso,completada,cancelada',
         ]);
 
@@ -153,7 +153,7 @@ class TaskController extends Controller
             'project_id' => 'sometimes|nullable|exists:projects,id', // Made nullable
             'assigned_to' => 'nullable|exists:users,id',
             'due_date' => 'nullable|date',
-            'priority' => 'sometimes|required|string|in:Baja,Media,Alta,Crítica',
+            'priority' => 'sometimes|required|string|in:baja,media,alta,critica',
             'status' => 'sometimes|required|string|in:pendiente,en_progreso,completada,cancelada',
         ]);
 

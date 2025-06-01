@@ -52,13 +52,10 @@
                     <div class="mb-4">
                         <x-label for="priority" value="Prioridad" />
                         <select id="priority" name="priority" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
-                            <option value="Baja" {{ old('priority', 'Media') == 'Baja' ? 'selected' : '' }}>Baja</option>
-                            <option value="Media" {{ old('priority', 'Media') == 'Media' ? 'selected' : '' }}>Media</option>
-                            <option value="Alta" {{ old('priority', 'Media') == 'Alta' ? 'selected' : '' }}>Alta</option>
-                            {{-- The controller validation uses 'Baja,Media,Alta,Crítica' --}}
-                            {{-- The original request for this view was 'baja, media, alta' --}}
-                            {{-- Let's stick to the controller's validation for now, which implies Crítica is also an option --}}
-                            <option value="Crítica" {{ old('priority', 'Media') == 'Crítica' ? 'selected' : '' }}>Crítica</option>
+                            <option value="baja" {{ old('priority', 'media') == 'baja' ? 'selected' : '' }}>Baja</option>
+                            <option value="media" {{ old('priority', 'media') == 'media' ? 'selected' : '' }}>Media</option>
+                            <option value="alta" {{ old('priority', 'media') == 'alta' ? 'selected' : '' }}>Alta</option>
+                            <option value="critica" {{ old('priority', 'media') == 'critica' ? 'selected' : '' }}>Crítica</option>
                         </select>
                     </div>
 

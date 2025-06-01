@@ -19,9 +19,9 @@ class LiderDashboardService
         if (method_exists($user, 'projectsLed')) { // Example: if there's a specific relationship for projects led
             $projectsLedCount = $user->projectsLed()->count();
         } elseif (method_exists($user, 'projects')) { // Fallback to a general projects relationship
-             // This might need refinement based on how 'lider' association is defined.
-             // If 'lider' means they are the 'lider_id' on projects table:
-             $projectsLedCount = \App\Domain\Projects\Models\Project::where('lider_id', $user->id)->count();
+             // This assumes User->projects() correctly fetches projects this leader is associated with
+             // via the project_user pivot table.
+             $projectsLedCount = $user->projects()->count();
         }
 
         $data = [

@@ -38,9 +38,28 @@
                         @error('component') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <label for="type" class="block font-medium text-gray-700 mb-1">Tipo de vulnerabilidad</label>
-                        <input type="text" name="type" id="type" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" value="{{ old('type', $vulnerability->type) }}">
-                        @error('type') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                        <label for="type_id" class="block font-medium text-gray-700 mb-1">Tipo de vulnerabilidad</label>
+                        <select name="type_id" id="type_id" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" required>
+                            <option value="">Seleccione un tipo...</option>
+                            @foreach($types as $type)
+                                <option value="{{ $type->id }}" {{ old('type_id', $vulnerability->type_id) == $type->id ? 'selected' : '' }}>
+                                    {{ $type->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('type_id') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                    </div>
+                    <div>
+                        <label for="category_id" class="block font-medium text-gray-700 mb-1">Categoría de Vulnerabilidad</label>
+                        <select name="category_id" id="category_id" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" required>
+                            <option value="">Seleccione una categoría...</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}" {{ old('category_id', $vulnerability->category_id) == $category->id ? 'selected' : '' }}>
+                                    {{ $category->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('category_id') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div>
                         <label for="owasp_classification" class="block font-medium text-gray-700 mb-1">Clasificación OWASP</label>

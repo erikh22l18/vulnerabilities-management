@@ -8,6 +8,16 @@
 - **Valida duplicados y actualiza si corresponde (en carga masiva):** IMPLEMENTADO.
 - **Utiliza campos tipo "select" para facilitar la usabilidad:** IMPLEMENTADO.
 
+#### RQF1.1.1 - Reporte Detallado de Errores en Importación de Vulnerabilidades
+- **Descripción:** Para mejorar la retroalimentación al usuario durante el proceso de carga masiva de vulnerabilidades, el sistema proporciona un informe detallado de errores en lugar de alertas genéricas.
+- **Especificaciones:**
+    - Cada intento de importación se registra como un lote (`import_batches`) con información del archivo original, usuario, estado del proceso (ej: pendiente, procesando, completado con errores, completado exitosamente, fallido), conteo total de filas, filas procesadas exitosamente y filas fallidas.
+    - Los errores específicos encontrados a nivel de fila durante el procesamiento en segundo plano (por `ProcessVulnerabilityImportJob`) se registran en una tabla dedicada (`import_row_errors`), incluyendo el número de fila original, los mensajes de error y, opcionalmente, los datos de la fila problemática.
+    - Al finalizar un trabajo de importación, el usuario recibe una notificación (ej: email, base de datos) que resume el resultado: total de filas, número de éxitos y número de fallos.
+    - Si se produjeron fallos, la notificación incluye un enlace a una página donde se pueden visualizar los errores detallados del lote de importación correspondiente.
+    - Se implementa una interfaz de usuario donde los usuarios pueden ver el historial de sus lotes de importación y acceder a los detalles de los errores de cada fila fallida. Los administradores tienen la capacidad de ver todos los lotes de importación.
+- **Estado:** IMPLEMENTADO.
+
 ### RQF2 - Gestión de usuarios, proyectos y organizaciones
 - **Registro de usuarios con campos como nombre, correo, área, organización y contraseña:** IMPLEMENTADO (campo 'área' añadido).
 - **Asignación de roles y permisos según estructura organizacional:** IMPLEMENTADO (roles Admin, Líder, Miembro con permisos definidos en `RolePermissionSeeder`). Se requiere lógica de Policies para restricciones más finas en `miembro`.

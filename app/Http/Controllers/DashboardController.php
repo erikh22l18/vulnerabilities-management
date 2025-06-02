@@ -8,6 +8,7 @@ use Illuminate\View\View;
 use App\Domain\Dashboard\Services\AdminDashboardService;
 use App\Domain\Dashboard\Services\LiderDashboardService;
 use App\Domain\Dashboard\Services\MiembroDashboardService;
+use App\Models\AuditLog; // Added AuditLog model
 
 class DashboardController extends Controller
 {
@@ -47,9 +48,33 @@ class DashboardController extends Controller
             // For now, $data remains empty, or you can define default data.
         }
 
+        // Add Audit Log entry for dashboard view
+        if (Auth::check()) { // Ensure user is authenticated before logging
+            AuditLog::create([
+                'user_id' => $user->id,
+                'action' => 'view_dashboard',
+                'description' => "User viewed {$dashboard_type} dashboard.",
+                'auditable_type' => 'Dashboard',
+                'auditable_id' => null,
+            ]);
+        }
+
         return view('dashboard', [
             'service_data' => $data,
             'dashboard_type' => $dashboard_type
         ]);
+    }
+
+    public function getAdminAvgResolutionTimeByOrg(Request $request, AdminDashboardService $adminDashboardService)
+    {
+        $user = $request->user();
+
+        // Ensure only authenticated admins can access
+        if (!$user || !$user->hasRole('admin')) {
+            return response()->json(['error' => 'Forbidden'], 403);
+        }
+
+        $data = $adminDashboardService->getAvgResolutionTimePerOrgData();
+        return response()->json($data);
     }
 }

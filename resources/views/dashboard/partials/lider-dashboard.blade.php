@@ -1,7 +1,8 @@
 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6 md:p-8">
     <h2 class="text-2xl font-semibold text-gray-800 mb-6">Dashboard de Líder de Proyecto</h2>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {{-- Adjusted grid to better accommodate 5 items, aiming for a 2-column feel on medium screens and up --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         {{-- Metric: Projects Led Count --}}
         <div class="bg-indigo-100 p-6 rounded-lg shadow">
             <h3 class="text-lg font-medium text-indigo-800">Proyectos Liderados</h3>
@@ -10,18 +11,39 @@
             </p>
         </div>
 
-        {{-- Add more lider-specific widgets/metrics here --}}
-        <div class="bg-teal-100 p-6 rounded-lg shadow">
-            <h3 class="text-lg font-medium text-teal-800">Vulnerabilidades Críticas (Mis Proyectos)</h3>
-            <p class="text-3xl font-bold text-teal-900 mt-2">
-                Próximamente
+        {{-- Metric: Critical Vulnerabilities in Leader's Projects --}}
+        <div class="bg-red-100 p-6 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-red-800">Vulnerabilidades Críticas (Mis Proyectos)</h3>
+            <p class="text-3xl font-bold text-red-900 mt-2">
+                {{ $data['critical_vulnerabilities_in_projects_count'] ?? 'N/A' }}
             </p>
         </div>
 
-        <div class="bg-pink-100 p-6 rounded-lg shadow">
-            <h3 class="text-lg font-medium text-pink-800">Tareas Pendientes (Mis Proyectos)</h3>
-            <p class="text-3xl font-bold text-pink-900 mt-2">
-                Próximamente
+        {{-- Metric: Accumulated Backlog --}}
+        <div class="bg-orange-100 p-6 rounded-lg shadow"> {{-- Using orange for backlog --}}
+            <h3 class="text-lg font-medium text-orange-800">Backlog Acumulado (Mis Proyectos)</h3>
+            <p class="text-3xl font-bold text-orange-900 mt-2">
+                {{ $data['accumulated_backlog_count'] ?? 'N/A' }}
+            </p>
+        </div>
+
+        {{-- Metric: Open Treatment Gaps --}}
+        <div class="bg-yellow-100 p-6 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-yellow-800">Brechas de Tratamiento Abiertas</h3>
+            <p class="text-3xl font-bold text-yellow-900 mt-2">
+                {{ $data['open_treatment_gaps_count'] ?? 'N/A' }}
+            </p>
+        </div>
+
+        {{-- Metric: Monthly Closure Rate --}}
+        <div class="bg-green-100 p-6 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-green-800">Tasa de Cierre Mensual (Vulnerabilidades)</h3>
+            <p class="text-3xl font-bold text-green-900 mt-2">
+                @if(isset($data['monthly_closure_rate']))
+                    {{ number_format($data['monthly_closure_rate'] * 100, 2) }}%
+                @else
+                    N/A
+                @endif
             </p>
         </div>
     </div>

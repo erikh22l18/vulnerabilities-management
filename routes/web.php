@@ -6,9 +6,11 @@ use App\Domain\Vulnerabilities\Controllers\VulnerabilityUserController;
 use App\Http\Controllers\Admin\UserController as AdminUserController; // Changed this line
 use App\Domain\Organizations\Controllers\OrganizationController;
 use App\Domain\Organizations\Controllers\OrganizationProjectController;
+use App\Domain\Organizations\Controllers\OrganizationUserController;
 use App\Domain\Projects\Controllers\ProjectController;
 use App\Domain\Projects\Controllers\ProjectUserController;
 use App\Domain\Projects\Controllers\ProjectTaskController;
+use App\Domain\Projects\Controllers\ProjectVulnerabilityController;
 use App\Domain\Vulnerabilities\Controllers\VulnerabilityTaskController;
 use App\Domain\Tasks\Controllers\TaskController;
 use App\Http\Controllers\DashboardController;
@@ -23,6 +25,12 @@ Route::middleware([
     'verified',
 ])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Routes for comment and changeState moved here
+    Route::post('/vulnerabilities/{vulnerability}/comment', [VulnerabilityController::class, 'comment'])
+        ->name('vulnerabilities.comment');
+    Route::post('/vulnerabilities/{vulnerability}/change-state', [VulnerabilityController::class, 'changeState'])
+        ->name('vulnerabilities.change-state');
 
     Route::middleware('role:lider')->group(function () {
         Route::get('/users/{user}/roles', [UserRoleController::class, 'edit'])->name('users.roles.edit');
@@ -68,12 +76,6 @@ Route::middleware([
         Route::post('/vulnerabilities/{vulnerability}/tasks', [VulnerabilityTaskController::class, 'store'])
             ->name('vulnerabilities.tasks.store');
 
-        Route::post('/vulnerabilities/{vulnerability}/comment', [VulnerabilityController::class, 'comment']) // Esta se mantendrá para solo añadir comentarios
-            ->name('vulnerabilities.comment');
-        
-        Route::post('/vulnerabilities/{vulnerability}/change-state', [VulnerabilityController::class, 'changeState']) // Nueva ruta para cambio de estado
-            ->name('vulnerabilities.change-state');
-
         Route::resource('tasks', TaskController::class);
 
         Route::resource('organizations', OrganizationController::class)
@@ -109,11 +111,13 @@ Route::middleware([
         Route::get('/projects/{project}/report/pdf', [ProjectController::class, 'generateProjectReportPDF'])
             ->name('projects.report.pdf');
 
+        Route::put('/projects/{project}/status', [\App\Domain\Projects\Controllers\ProjectController::class, 'updateStatus'])->name('projects.updateStatus');
+
         Route::resource('admin/users', AdminUserController::class)->names('admin.users'); // Changed this line
     });
 
-    Route::resource(('projects'), ProjectController::class)
-        ->except(['show']);
+    Route::resource(('projects'), ProjectController::class);
+        // ->except(['show']); // 'show' route is now enabled
     Route::get('/projects/{project}/vulnerabilities', [ProjectVulnerabilityController::class, 'index'])
         ->name('projects.vulnerabilities.index');
 

@@ -19,32 +19,32 @@
                     
                         <p class="mb-2"><span class="font-semibold text-gray-700">Estado:</span>
                             <span class="inline-block px-2 py-1 rounded-full text-xs font-semibold
-                                {{ $vulnerability->status === 'Detectada' ? 'bg-yellow-100 text-yellow-700' : '' }}
-                                {{ $vulnerability->status === 'En análisis' ? 'bg-blue-100 text-blue-700' : '' }}
-                                {{ $vulnerability->status === 'En tratamiento' ? 'bg-orange-100 text-orange-700' : '' }}
-                                {{ $vulnerability->status === 'Resuelta' ? 'bg-green-100 text-green-700' : '' }}
-                                {{ $vulnerability->status === 'Cerrada' ? 'bg-gray-200 text-gray-600' : '' }}">
-                                {{ $vulnerability->status }}
+                                {{ $vulnerability->state === 'Detectada' ? 'bg-yellow-100 text-yellow-700' : '' }}
+                                {{ $vulnerability->state === 'En análisis' ? 'bg-blue-100 text-blue-700' : '' }}
+                                {{ $vulnerability->state === 'En tratamiento' ? 'bg-orange-100 text-orange-700' : '' }}
+                                {{ $vulnerability->state === 'Resuelta' ? 'bg-green-100 text-green-700' : '' }}
+                                {{ $vulnerability->state === 'Cerrada' ? 'bg-gray-200 text-gray-600' : '' }}">
+                                {{ $vulnerability->state ?? 'N/A' }}
                             </span>
                         </p>
                         <p class="mb-2"><span class="font-semibold text-gray-700">Proyecto:</span> {{ $vulnerability->project->name ?? '-' }}</p>
-                        <p class="mb-2"><span class="font-semibold text-gray-700">Componente:</span> {{ $vulnerability->component }}</p>
-                        <p class="mb-2"><span class="font-semibold text-gray-700">Tipo:</span> {{ $vulnerability->type }}</p>
-                        <p class="mb-2"><span class="font-semibold text-gray-700">Clasificación OWASP:</span> {{ $vulnerability->owasp_classification }}</p>
-                        <p class="mb-2"><span class="font-semibold text-gray-700">Vector CVSS:</span> {{ $vulnerability->cvss_vector }}</p>
-                        <p class="mb-2"><span class="font-semibold text-gray-700">Puntaje CVSS:</span> {{ $vulnerability->cvss_score }}</p>
-                        <p class="mb-2"><span class="font-semibold text-gray-700">Nivel de severidad:</span> {{ $vulnerability->severity }}</p>
-                        <p class="mb-2"><span class="font-semibold text-gray-700">Probabilidad de explotación:</span> {{ $vulnerability->likelihood }}</p>
-                        <p class="mb-2"><span class="font-semibold text-gray-700">Impacto estimado:</span> {{ $vulnerability->impact }}</p>
-                        <p class="mb-2"><span class="font-semibold text-gray-700">Prioridad:</span> {{ $vulnerability->priority }}</p>
-                        <p class="mb-2"><span class="font-semibold text-gray-700">Fuente de detección:</span> {{ $vulnerability->source }}</p>
-                        <p class="mb-2"><span class="font-semibold text-gray-700">Fecha de detección:</span> {{ $vulnerability->detection_date ? \Carbon\Carbon::parse($vulnerability->detection_date)->format('d/m/Y') : '-' }}</p>
-                        <p class="mb-2"><span class="font-semibold text-gray-700">Fecha límite:</span> {{ $vulnerability->due_date ? \Carbon\Carbon::parse($vulnerability->due_date)->format('d/m/Y') : '-' }}</p>
+                        <p class="mb-2"><span class="font-semibold text-gray-700">Componente:</span> {{ $vulnerability->component ?? 'N/A' }}</p>
+                        <p class="mb-2"><span class="font-semibold text-gray-700">Tipo:</span> {{ $vulnerability->type->name ?? 'N/A' }}</p>
+                        <p class="mb-2"><span class="font-semibold text-gray-700">Clasificación OWASP:</span> {{ $vulnerability->owasp_classification ?? 'N/A' }}</p>
+                        <p class="mb-2"><span class="font-semibold text-gray-700">Vector CVSS:</span> {{ $vulnerability->cvss_vector ?? 'N/A' }}</p>
+                        <p class="mb-2"><span class="font-semibold text-gray-700">Puntaje CVSS:</span> {{ $vulnerability->cvss_score ?? 'N/A' }}</p>
+                        <p class="mb-2"><span class="font-semibold text-gray-700">Nivel de severidad:</span> {{ $vulnerability->severity_level ?? 'N/A' }}</p>
+                        <p class="mb-2"><span class="font-semibold text-gray-700">Probabilidad de explotación:</span> {{ $vulnerability->exploit_probability ?? 'N/A' }}</p>
+                        <p class="mb-2"><span class="font-semibold text-gray-700">Impacto estimado:</span> {{ $vulnerability->estimated_impact ?? 'N/A' }}</p>
+                        <p class="mb-2"><span class="font-semibold text-gray-700">Prioridad:</span> {{ $vulnerability->priority ?? 'N/A' }}</p>
+                        <p class="mb-2"><span class="font-semibold text-gray-700">Fuente de detección:</span> {{ $vulnerability->detection_source ?? 'N/A' }}</p>
+                        <p class="mb-2"><span class="font-semibold text-gray-700">Fecha de detección:</span> {{ $vulnerability->detection_date ? \Carbon\Carbon::parse($vulnerability->detection_date)->format('d/m/Y') : 'N/A' }}</p>
+                        <p class="mb-2"><span class="font-semibold text-gray-700">Fecha límite:</span> {{ $vulnerability->resolution_deadline ? \Carbon\Carbon::parse($vulnerability->resolution_deadline)->format('d/m/Y') : 'N/A' }}</p>
                         <p class="mb-2 col-span-2"><span class="font-semibold text-gray-700">Descripción:</span><br>
-                            <span class="text-gray-700">{{ $vulnerability->description }}</span>
+                            <span class="text-gray-700">{{ $vulnerability->description ?? 'N/A' }}</span>
                         </p>
                         <p class="mb-2 col-span-2"><span class="font-semibold text-gray-700">Observaciones:</span><br>
-                            <span class="text-gray-700">{{ $vulnerability->observations }}</span>
+                            <span class="text-gray-700">{{ $vulnerability->observations ?? 'N/A' }}</span>
                         </p>
                         <p class="mb-2 col-span-2"><span class="font-semibold text-gray-700">Enlace a documentación:</span>
                             @if($vulnerability->documentation_url)
@@ -195,6 +195,12 @@
                             class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded shadow transition">
                             Editar
                         </a>
+                        @can('create', [App\Domain\Tasks\Models\Task::class, $vulnerability])
+                            <a href="{{ route('vulnerabilities.tasks.create', $vulnerability) }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow transition inline-flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                Añadir Tarea
+                            </a>
+                        @endcan
                     </div>
                 </div>
             </div>

@@ -49,9 +49,9 @@
                                         <td class="px-4 py-2">{{ $project->organization->name }}</td>
                                     @endif
                                     <td class="px-4 py-2">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                            {{ $project->is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
-                                            {{ $project->is_active ? 'Activo' : 'Inactivo' }}
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                            {{ strtolower($project->status) === 'active' ? 'bg-green-100 text-green-800' : (strtolower($project->status) === 'activo' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800') }}">
+                                            {{ ucfirst($project->status) }}
                                         </span>
                                     </td>
                                     <td class="px-4 py-2">
@@ -87,6 +87,28 @@
                                                    target="_blank">  {{-- target="_blank" para abrir en nueva pestaña --}}
                                                     Descargar Informe (PDF)
                                                 </a>
+                                                @endcan
+                                                @can('update', $project)
+                                                    <div class="border-t border-gray-100"></div>
+                                                    @if(strtolower($project->status) === 'active' || strtolower($project->status) === 'activo')
+                                                        <form action="{{ route('projects.updateStatus', $project) }}" method="POST" class="block w-full">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            <input type="hidden" name="status" value="inactive">
+                                                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-yellow-700 hover:bg-gray-100" title="Marcar como Inactivo">
+                                                                Inactivar Proyecto
+                                                            </button>
+                                                        </form>
+                                                    @else
+                                                        <form action="{{ route('projects.updateStatus', $project) }}" method="POST" class="block w-full">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            <input type="hidden" name="status" value="active">
+                                                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-green-700 hover:bg-gray-100" title="Marcar como Activo">
+                                                                Activar Proyecto
+                                                            </button>
+                                                        </form>
+                                                    @endif
                                                 @endcan
                                             </div>
                                         </div>

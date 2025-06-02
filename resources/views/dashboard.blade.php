@@ -55,7 +55,7 @@
                             </div>
                         </a>
                         @unlessrole('miembro')
-                        <a href="{{ route('users.index') }}" class="p-6 bg-green-50 rounded-lg shadow flex items-center hover:bg-green-100 transition">
+                        <a href="{{ route('admin.users.index') }}" class="p-6 bg-green-50 rounded-lg shadow flex items-center hover:bg-green-100 transition">
                             <svg class="w-8 h-8 text-green-400 mr-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6 0A4 4 0 0012 4a4 4 0 00-1 7.87" />
                             </svg>

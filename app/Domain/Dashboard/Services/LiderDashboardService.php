@@ -84,12 +84,12 @@ class LiderDashboardService
         // Condition 1: Overdue vulnerabilities not resolved/closed
         $overdueQuery = Vulnerability::whereIn('project_id', $projectIds)
             ->where('resolution_deadline', '<', $now)
-            ->whereNotIn('status', ['Resuelta', 'Cerrada']);
+            ->whereNotIn('state', ['Resuelta', 'Cerrada']);
 
         // Condition 2: Open/In-progress vulnerabilities with no user assigned
         $unassignedQuery = Vulnerability::whereIn('project_id', $projectIds)
             ->whereIn('state', ['Detectada', 'En tratamiento'])
-            ->whereNull('assigned_to');
+            ->whereNull('assigned_user_id');
 
         // To avoid double counting, we can get IDs from the first query
         // and use `orWhere` with a condition that the ID is not in the first set for the second part.
@@ -111,7 +111,7 @@ class LiderDashboardService
         }
 
         return Vulnerability::whereIn('project_id', $projectIds)
-            ->whereNotIn('status', ['Resuelta', 'Cerrada'])
+            ->whereNotIn('state', ['Resuelta', 'Cerrada'])
             ->count();
     }
 
@@ -123,7 +123,7 @@ class LiderDashboardService
 
         return Vulnerability::whereIn('project_id', $projectIds)
             ->whereIn('severity_level', ['Alta', 'Crítica'])
-            ->whereNotIn('status', ['Resuelta', 'Cerrada'])
+            ->whereNotIn('state', ['Resuelta', 'Cerrada'])
             ->count();
     }
 

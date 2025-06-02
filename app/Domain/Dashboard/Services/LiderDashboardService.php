@@ -60,7 +60,7 @@ class LiderDashboardService
         // Total open vulnerabilities at month-end for projects associated with the leader
         // This counts vulnerabilities that are currently 'open' or 'in-progress'.
         $openAtMonthEnd = Vulnerability::whereIn('project_id', $projectIds)
-            ->whereIn('status', ['Detectada', 'En tratamiento'])
+            ->whereIn('state', ['Detectada', 'En tratamiento'])
             ->count();
 
         // The denominator: open vulnerabilities at month-end + those closed this month
@@ -88,7 +88,7 @@ class LiderDashboardService
 
         // Condition 2: Open/In-progress vulnerabilities with no user assigned
         $unassignedQuery = Vulnerability::whereIn('project_id', $projectIds)
-            ->whereIn('status', ['Detectada', 'En tratamiento'])
+            ->whereIn('state', ['Detectada', 'En tratamiento'])
             ->whereNull('assigned_to');
 
         // To avoid double counting, we can get IDs from the first query

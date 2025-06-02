@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('exploit_probability')->nullable();
             $table->string('estimated_impact')->nullable();
 
-            $table->enum('state', ['Detectada', 'Asignada', 'En tratamiento', 'Resuelta', 'Cerrada'])->default('Detectada');
+            $table->enum('state', ['Detectada', 'En tratamiento', 'Resuelta', 'Cerrada'])->default('Detectada');
 
             $table->string('detection_source')->nullable();
             $table->string('documentation_url')->nullable();

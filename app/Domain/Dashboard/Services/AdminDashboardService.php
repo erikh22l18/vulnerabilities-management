@@ -20,10 +20,10 @@ class AdminDashboardService
             'total_users' => User::count(),
             // Add more admin-specific data points here later
             'critical_open_vulnerabilities_count' => Vulnerability::whereIn('severity_level', ['Alta', 'Crítica'])
-                ->whereIn('status', ['Detectada', 'En tratamiento'])
+                ->whereIn('state', ['Detectada', 'En tratamiento'])
                 ->count(),
             'overdue_vulnerabilities_count' => Vulnerability::where('resolution_deadline', '<', now())
-                ->whereNotIn('status', ['Resuelta', 'Cerrada'])
+                ->whereNotIn('state', ['Resuelta', 'Cerrada'])
                 ->count(),
             'sla_compliance_percentage' => -1, // Placeholder: Specific SLA logic needed
             // Assuming User model has last_login_at. If not, this will throw an error.

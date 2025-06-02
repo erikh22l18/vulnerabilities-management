@@ -14,9 +14,9 @@ class LiderDashboardService
     {
         $projectIds = [];
         if (method_exists($user, 'projectsLed')) {
-            $projectIds = $user->projectsLed()->pluck('id')->toArray();
+            $projectIds = $user->projectsLed()->pluck('projects.id')->toArray();
         } elseif (method_exists($user, 'projects')) {
-            $projectIds = $user->projects()->pluck('id')->toArray();
+            $projectIds = $user->projects()->pluck('projects.id')->toArray();
         }
 
         $projectsLedCount = count($projectIds);

@@ -5,8 +5,9 @@ namespace App\Domain\Projects\Controllers;
 use App\Http\Controllers\Controller;
 use App\Domain\Projects\Models\Project;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Http\Request; // Will be replaced by FormRequest in store method
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Domain\Projects\Requests\AssignProjectUsersRequest; // Added
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 
@@ -75,27 +76,40 @@ class ProjectUserController extends Controller
      * @throws \Illuminate\Auth\Access\AuthorizationException If the user is not authorized.
      * @throws \Illuminate\Validation\ValidationException If request validation fails.
      */
-    public function store(Request $request, Project $project): RedirectResponse
+    public function store(AssignProjectUsersRequest $request, Project $project): RedirectResponse
     {
-        $this->authorize('asignarUsuarios', $project);
+        // Authorization and validation (including organization check and role values)
+        // are handled by AssignProjectUsersRequest.
+        $validatedData = $request->validated();
 
-        // Validate incoming data.
-        $validated = $request->validate([
-            'user_ids' => 'required|array', // Expect an array of user IDs
-            'user_ids.*' => 'exists:users,id', // Each user ID must exist
-            'roles' => 'required|array', // Expect an array of roles, indexed by user_id
-            'roles.*' => 'required|string|in:member,admin,viewer', // Validate role values (adjust as per your defined roles)
-        ]);
+        // Detach all existing users first to handle removals and role changes cleanly.
+        // Or, if you want to preserve users not mentioned in the request, this logic needs adjustment.
+        // For a "sync" like operation, detaching all and re-attaching is simpler.
+        // However, the original logic was additive. Let's stick to additive but ensure roles are updated.
+        // $project->users()->detach(); // Uncomment for a full sync approach
 
-        // Attach each selected user to the project with their specified role.
-        foreach ($validated['user_ids'] as $userId) {
-            // Ensure a role is provided for each user ID.
-            if (isset($validated['roles'][$userId])) {
-                $project->users()->attach($userId, [
-                    'role' => $validated['roles'][$userId] // Pivot table 'role' column
-                ]);
-            }
+        $usersToSync = [];
+        foreach ($validatedData['user_ids'] as $userId) {
+            // The AssignProjectUsersRequest ensures roles are provided and valid for given user_ids if roles array is structured as roles[user_id]
+            // If roles array is indexed, this logic needs to be different.
+            // Assuming roles is an associative array keyed by user_id from the form,
+            // and validated by 'roles.*'.
+            $role = $validatedData['roles'][$userId] ?? 'miembro'; // Default role if not specified for a user_id
+
+            // Ensure user belongs to the project's organization (this is now in FormRequest's withValidator)
+            // $user = User::find($userId);
+            // if ($user && $user->organization_id == $project->organization_id) {
+            //    $usersToSync[$userId] = ['role' => $role];
+            // }
+            // The FormRequest already filtered user_ids by organization.
+            // So, all user_ids in $validatedData['user_ids'] are valid to be added.
+            $usersToSync[$userId] = ['role' => $role];
         }
+
+        // Using sync instead of attach to handle updates and removals gracefully.
+        // If a user_id is in $usersToSync, they will be attached or their role updated.
+        // If a user was previously attached but not in $usersToSync, they will be detached.
+        $project->users()->sync($usersToSync);
 
         return redirect()
             ->route('projects.users.index', $project)

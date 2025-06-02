@@ -5,8 +5,10 @@ namespace App\Domain\Organizations\Controllers;
 use App\Http\Controllers\Controller;
 use App\Domain\Organizations\Models\Organization;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Http\Request; // Will be replaced by FormRequests
 use Illuminate\Support\Facades\Hash; // Import Hash facade
+use App\Domain\Organizations\Requests\StoreOrganizationUserRequest; // Added
+use App\Domain\Organizations\Requests\UpdateOrganizationUserRequest; // Added
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests; // For authorization
@@ -62,39 +64,34 @@ class OrganizationUserController extends Controller
      * @throws \Illuminate\Auth\Access\AuthorizationException If the user is not authorized.
      * @throws \Illuminate\Validation\ValidationException If request validation fails.
      */
-    public function store(Request $request, Organization $organization): RedirectResponse
+    public function store(StoreOrganizationUserRequest $request, Organization $organization): RedirectResponse
     {
-        $this->authorize('update', $organization); // Authorization check
+        // Authorization and conditional validation are handled by StoreOrganizationUserRequest
+        $validatedData = $request->validated();
 
-        // Check if the request is to create a new user.
-        if ($request->has('create_new_user_form')) { // Ensure form field name matches
-            // Validate data for creating a new user.
-            $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|min:8|confirmed',
-            ]);
-
-            // Create the new user and assign them to the current organization.
+        // Check if the request was to create a new user (based on which rules were applied/passed)
+        if (isset($validatedData['name']) && isset($validatedData['email']) && isset($validatedData['password'])) {
+            // Logic for creating a new user
             User::create([
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-                'password' => Hash::make($validated['password']), // Use Hash facade
+                'name' => $validatedData['name'],
+                'email' => $validatedData['email'],
+                'password' => Hash::make($validatedData['password']),
                 'organization_id' => $organization->id
+                // 'area' could be $validatedData['area'] if added to form & request rules
             ]);
             $message = 'Usuario nuevo creado y agregado a la organización exitosamente.';
-        } else {
-            // Validate data for adding existing users.
-            $validated = $request->validate([
-                'user_ids' => 'required|array',
-                'user_ids.*' => 'exists:users,id' // Ensure all provided user IDs exist.
-            ]);
-
-            // Assign the selected existing users to the current organization.
-            User::whereIn('id', $validated['user_ids'])
-                ->whereNull('organization_id') // Optional: Only assign users not already in an org
+        } elseif (isset($validatedData['user_ids'])) {
+            // Logic for adding existing users
+            // The FormRequest does not currently filter these user_ids to ensure they are not already in an org,
+            // but the controller's original logic did. This might need to be added back or handled by DB constraints/policy.
+            // For now, we'll replicate the controller's intent to only update users not already in an org.
+            User::whereIn('id', $validatedData['user_ids'])
+                ->whereNull('organization_id') // Only assign if not already in an organization
                 ->update(['organization_id' => $organization->id]);
             $message = 'Usuarios existentes agregados a la organización exitosamente.';
+        } else {
+            // Should not be reached if FormRequest rules are correctly triggered by input
+            return redirect()->back()->with('error', 'Solicitud inválida.');
         }
 
         return redirect()->route('organizations.users.index', $organization)
@@ -131,29 +128,24 @@ class OrganizationUserController extends Controller
      * @throws \Illuminate\Auth\Access\AuthorizationException If the user is not authorized.
      * @throws \Illuminate\Validation\ValidationException If request validation fails.
      */
-    public function update(Request $request, Organization $organization, User $user): RedirectResponse
+    public function update(UpdateOrganizationUserRequest $request, Organization $organization, User $user): RedirectResponse
     {
-        $this->authorize('update', $user);
+        // Authorization is handled by UpdateOrganizationUserRequest (checks if current user can update $user)
+        // Additional check: Ensure the $user being updated actually belongs to the $organization from the route.
         if ($user->organization_id !== $organization->id) {
-            abort(404); // Or redirect with error if user not in this org
+            abort(403, 'Este usuario no pertenece a la organización especificada.');
         }
 
-        // Validate user data.
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            // Password update is typically handled in a separate form/controller action for security.
-            // If password change is intended here, add: 'password' => 'nullable|string|min:8|confirmed',
-        ]);
+        $validatedData = $request->validated();
 
-        // If password is part of the form and validated:
-        // if (!empty($validated['password'])) {
-        //     $validated['password'] = Hash::make($validated['password']);
+        // Password handling: If password fields are added to UpdateOrganizationUserRequest and are present in $validatedData
+        // if (!empty($validatedData['password'])) {
+        //     $validatedData['password'] = Hash::make($validatedData['password']);
         // } else {
-        //     unset($validated['password']); // Don't update password if empty
+        //     unset($validatedData['password']); // Ensure password isn't updated if not provided
         // }
 
-        $user->update($validated);
+        $user->update($validatedData);
 
         return redirect()->route('organizations.users.index', $organization)
             ->with('success', 'Usuario actualizado exitosamente.');

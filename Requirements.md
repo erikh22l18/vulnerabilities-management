@@ -2,20 +2,67 @@
 
 ## 1. Requerimientos Funcionales
 
-### RQF1.1 - Registro y almacenamiento de vulnerabilidades
-- **Permite registro manual mediante formulario con campos específicos:** IMPLEMENTADO.
-- **Soporta carga masiva desde archivo Excel con plantilla predefinida:** IMPLEMENTADO (de forma asíncrona con Laravel Queues).
-- **Valida duplicados y actualiza si corresponde (en carga masiva):** IMPLEMENTADO.
-- **Utiliza campos tipo "select" para facilitar la usabilidad:** IMPLEMENTADO.
+### RQF1.1 - Carga Masiva de Vulnerabilidades (Importación Excel)
+- **Descripción General:** El sistema permitirá la carga masiva de vulnerabilidades mediante un archivo Excel (XLSX). Este proceso se realizará de forma asíncrona para no afectar el rendimiento de la aplicación y proporcionará retroalimentación detallada al usuario sobre el resultado de la importación.
+- **Referencia ISO 27001:** A.12.5.1, A.12.6.1, A.14.2.1, A.18.1.3
+- **Estado:** PARCIALMENTE IMPLEMENTADO (Backend y UI básica para historial/errores lista. Lógica de importación en `VulnerabilityImport` por refactorizar).
 
-#### RQF1.1.1 - Reporte Detallado de Errores en Importación de Vulnerabilidades
-- **Descripción:** Para mejorar la retroalimentación al usuario durante el proceso de carga masiva de vulnerabilidades, el sistema proporciona un informe detallado de errores en lugar de alertas genéricas.
+#### RQF1.1.1 - Formato y Plantilla del Archivo
+- **Descripción:** Se definirá una plantilla Excel (`plantilla_vulnerabilidades.xlsx`) que los usuarios deberán utilizar para la carga masiva. La plantilla contendrá columnas predefinidas correspondientes a los campos de una vulnerabilidad.
 - **Especificaciones:**
-    - Cada intento de importación se registra como un lote (`import_batches`) con información del archivo original, usuario, estado del proceso (ej: pendiente, procesando, completado con errores, completado exitosamente, fallido), conteo total de filas, filas procesadas exitosamente y filas fallidas.
-    - Los errores específicos encontrados a nivel de fila durante el procesamiento en segundo plano (por `ProcessVulnerabilityImportJob`) se registran en una tabla dedicada (`import_row_errors`), incluyendo el número de fila original, los mensajes de error y, opcionalmente, los datos de la fila problemática.
-    - Al finalizar un trabajo de importación, el usuario recibe una notificación (ej: email, base de datos) que resume el resultado: total de filas, número de éxitos y número de fallos.
-    - Si se produjeron fallos, la notificación incluye un enlace a una página donde se pueden visualizar los errores detallados del lote de importación correspondiente.
-    - Se implementa una interfaz de usuario donde los usuarios pueden ver el historial de sus lotes de importación y acceder a los detalles de los errores de cada fila fallida. Los administradores tienen la capacidad de ver todos los lotes de importación.
+    - La plantilla estará disponible para descarga desde la aplicación.
+    - Incluirá todas las columnas necesarias mapeadas a los campos del modelo `Vulnerability` (ej. Título, Descripción, Proyecto Asociado, Tipo, Estado, Severidad, CVSS, Responsable, etc.).
+    - Columnas con valores predefinidos (ej. Estado, Severidad, Prioridad) deben indicar los valores permitidos (posiblemente en una hoja de ayuda o comentarios de celda).
+    - Campos de fecha deben especificar el formato esperado (ej. YYYY-MM-DD).
+    - Proyecto y Usuario Responsable se identificarán por nombres/correos únicos que deben existir en el sistema.
+- **Estado:** IMPLEMENTADO (Plantilla definida y descargable).
+
+#### RQF1.1.2 - Proceso de Carga Asíncrona
+- **Descripción:** La carga del archivo Excel y su procesamiento se realizarán en segundo plano utilizando colas de trabajos (Laravel Queues).
+- **Especificaciones:**
+    - El usuario sube el archivo a través de una interfaz dedicada.
+    - El archivo se almacena temporalmente y se despacha un job (`ProcessVulnerabilityImportJob`) a la cola.
+    - El job procesa cada fila del archivo para crear o actualizar registros de vulnerabilidades.
+    - El usuario es notificado al inicio y finalización del proceso.
+- **Estado:** IMPLEMENTADO.
+
+#### RQF1.1.3 - Validación de Cabeceras y Datos
+- **Descripción:** Antes del procesamiento en segundo plano, se realizarán validaciones iniciales del archivo. Durante el procesamiento del job, cada fila será validada.
+- **Especificaciones:**
+    - **Validación de Cabeceras (Sincrónica):** Al subir el archivo, el sistema verifica que las cabeceras coincidan con la plantilla esperada. Si no coinciden, se informa al usuario inmediatamente y no se encola el job.
+    - **Validación de Filas (Asíncrona, en el Job):**
+        - Cada fila es validada contra las reglas definidas para los campos de vulnerabilidad (ej. tipo de dato, longitud, valores permitidos para enums, existencia de entidades relacionadas como Proyecto, Usuario, Tipo de Vulnerabilidad).
+        - Se valida que el Proyecto y Usuario Responsable (si se proveen) existan en el sistema.
+        - Se valida que el usuario asignado como responsable pertenezca a la misma organización que el proyecto de la vulnerabilidad.
+    - **Manejo de Duplicados:** (Ver RQF1.1.5)
+- **Estado:** IMPLEMENTADO (Validación de cabeceras y validación de filas básicas en `VulnerabilityImport`). Lógica de validación de pertenencia a organización para usuario responsable necesita ser robustecida en `VulnerabilityImport`.
+
+#### RQF1.1.4 - Reporte Detallado de Errores y Tracking de Lotes (Batch)
+- **Descripción:** Se proporciona un informe detallado de errores y se rastrea cada intento de importación.
+- **Especificaciones:**
+    - Cada importación se registra en `import_batches` (ID ULID, usuario, archivo, estado, conteos, timestamps, resumen de error).
+    - Errores a nivel de fila se registran en `import_row_errors` (ID ULID, batch_id, #fila, mensajes de error JSON, datos de fila JSON).
+    - Notificación al usuario al finalizar (éxito, error parcial, fallo total) con resumen y enlace a detalles si hay errores.
+    - Interfaz para ver historial de importaciones (`vulnerabilities.imports.index`) y detalles de errores por lote (`vulnerabilities.imports.errors`).
+    - Administradores ven todos los lotes; otros usuarios solo los suyos.
+- **Estado:** IMPLEMENTADO.
+
+#### RQF1.1.5 - Manejo de Duplicados y Actualizaciones
+- **Descripción:** El sistema debe definir cómo manejar vulnerabilidades que ya podrían existir en la base de datos, basándose en un identificador único (ej. Título + Proyecto + Componente).
+- **Especificaciones:**
+    - **Opción 1 (Actualizar):** Si se encuentra una vulnerabilidad duplicada (basado en campos clave), se actualizan sus datos con la información del Excel. Se registra la acción. (IMPLEMENTADO por defecto en `VulnerabilityImport`)
+    - **Opción 2 (Omitir):** Si se encuentra un duplicado, se omite la fila del Excel y se registra. (No implementado, actual es actualizar)
+    - **Opción 3 (Marcar como Error):** Si se encuentra un duplicado, se marca como un error para esa fila. (No implementado)
+    - La estrategia actual es actualizar el registro existente si se encuentra por título dentro del mismo proyecto. Se debe revisar si se necesitan identificadores más robustos para duplicados.
+- **Estado:** IMPLEMENTADO (Actualización simple por título en mismo proyecto). Necesita revisión para robustez.
+
+#### RQF1.1.6 - Asignación de Campos y Valores por Defecto
+- **Descripción:** Ciertos campos pueden tener valores por defecto o ser derivados si no se proveen en el Excel.
+- **Especificaciones:**
+    - `created_by`: Usuario que sube el archivo. (IMPLEMENTADO)
+    - `project_id`: Obtenido del nombre del proyecto en el Excel. (IMPLEMENTADO)
+    - `assigned_user_id` (Responsable): Obtenido del email/nombre del usuario en el Excel. (IMPLEMENTADO)
+    - `state`: Puede tener un valor por defecto como 'Detectada' si no se especifica y es válido. (IMPLEMENTADO, por defecto en modelo/DB)
 - **Estado:** IMPLEMENTADO.
 
 ### RQF2 - Gestión de usuarios, proyectos y organizaciones

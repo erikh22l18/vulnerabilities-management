@@ -28,6 +28,9 @@ class LiderDashboardService
             'open_treatment_gaps_count' => $this->calculateOpenTreatmentGaps($projectIds),
             'accumulated_backlog_count' => $this->calculateAccumulatedBacklog($projectIds),
             'critical_vulnerabilities_in_projects_count' => $this->calculateCriticalVulnerabilitiesInProjects($projectIds),
+            // New compliance metrics for Lider's projects
+            'critical_high_remediation_rate_projects' => $this->calculateCriticalHighRemediationRateProjects($projectIds),
+            'on_time_remediation_percentage_projects' => $this->calculateOnTimeRemediationPercentageProjects($projectIds),
         ];
 
         // Sample lider alerts
@@ -49,7 +52,7 @@ class LiderDashboardService
         $endOfMonth = Carbon::now()->endOfMonth();
 
         $closedThisMonth = Vulnerability::whereIn('project_id', $projectIds)
-            ->whereIn('status', ['resolved', 'closed'])
+            ->whereIn('status', ['Resuelta', 'Cerrada'])
             ->whereNotNull('resolved_at') // Ensure resolved_at is not null
             ->whereBetween('resolved_at', [$startOfMonth, $endOfMonth])
             ->count();
@@ -57,7 +60,7 @@ class LiderDashboardService
         // Total open vulnerabilities at month-end for projects associated with the leader
         // This counts vulnerabilities that are currently 'open' or 'in-progress'.
         $openAtMonthEnd = Vulnerability::whereIn('project_id', $projectIds)
-            ->whereIn('status', ['open', 'in-progress'])
+            ->whereIn('status', ['Detectada', 'En tratamiento'])
             ->count();
 
         // The denominator: open vulnerabilities at month-end + those closed this month
@@ -80,12 +83,12 @@ class LiderDashboardService
 
         // Condition 1: Overdue vulnerabilities not resolved/closed
         $overdueQuery = Vulnerability::whereIn('project_id', $projectIds)
-            ->where('due_date', '<', $now)
-            ->whereNotIn('status', ['resolved', 'closed']);
+            ->where('resolution_deadline', '<', $now)
+            ->whereNotIn('status', ['Resuelta', 'Cerrada']);
 
         // Condition 2: Open/In-progress vulnerabilities with no user assigned
         $unassignedQuery = Vulnerability::whereIn('project_id', $projectIds)
-            ->whereIn('status', ['open', 'in-progress'])
+            ->whereIn('status', ['Detectada', 'En tratamiento'])
             ->whereNull('assigned_to');
 
         // To avoid double counting, we can get IDs from the first query
@@ -108,7 +111,7 @@ class LiderDashboardService
         }
 
         return Vulnerability::whereIn('project_id', $projectIds)
-            ->whereNotIn('status', ['resolved', 'closed'])
+            ->whereNotIn('status', ['Resuelta', 'Cerrada'])
             ->count();
     }
 
@@ -119,8 +122,55 @@ class LiderDashboardService
         }
 
         return Vulnerability::whereIn('project_id', $projectIds)
-            ->whereIn('severity', ['critical', 'high'])
-            ->whereNotIn('status', ['resolved', 'closed'])
+            ->whereIn('severity_level', ['Alta', 'Crítica'])
+            ->whereNotIn('status', ['Resuelta', 'Cerrada'])
             ->count();
+    }
+
+    private function calculateCriticalHighRemediationRateProjects(array $projectIds): float
+    {
+        if (empty($projectIds)) {
+            return 0.0;
+        }
+
+        $resolvedCriticalHighCount = Vulnerability::whereIn('project_id', $projectIds)
+            ->whereIn('severity_level', ['Alta', 'Crítica'])
+            ->whereIn('status', ['Resuelta', 'Cerrada'])
+            ->count();
+
+        $totalCriticalHighCount = Vulnerability::whereIn('project_id', $projectIds)
+            ->whereIn('severity_level', ['Alta', 'Crítica'])
+            ->count();
+
+        if ($totalCriticalHighCount === 0) {
+            return 0.0; // Or 100.0 if no critical/high issues means 100% compliance by some definitions
+        }
+
+        return round(($resolvedCriticalHighCount / $totalCriticalHighCount) * 100, 2);
+    }
+
+    private function calculateOnTimeRemediationPercentageProjects(array $projectIds): float
+    {
+        if (empty($projectIds)) {
+            return 0.0;
+        }
+
+        $onTimeResolvedCount = Vulnerability::whereIn('project_id', $projectIds)
+            ->whereIn('status', ['Resuelta', 'Cerrada'])
+            ->whereNotNull('resolution_deadline')
+            ->whereNotNull('resolved_at')
+            ->whereRaw('DATE(resolved_at) <= DATE(resolution_deadline)')
+            ->count();
+
+        $totalDeadlineResolvedCount = Vulnerability::whereIn('project_id', $projectIds)
+            ->whereIn('status', ['Resuelta', 'Cerrada'])
+            ->whereNotNull('resolution_deadline')
+            ->count();
+
+        if ($totalDeadlineResolvedCount === 0) {
+            return 0.0;
+        }
+
+        return round(($onTimeResolvedCount / $totalDeadlineResolvedCount) * 100, 2);
     }
 }

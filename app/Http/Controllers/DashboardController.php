@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Illuminate\Http\JsonResponse; // Added JsonResponse
 use App\Domain\Dashboard\Services\AdminDashboardService;
 use App\Domain\Dashboard\Services\LiderDashboardService;
 use App\Domain\Dashboard\Services\MiembroDashboardService;
@@ -75,6 +76,46 @@ class DashboardController extends Controller
         }
 
         $data = $adminDashboardService->getAvgResolutionTimePerOrgData();
+        return response()->json($data);
+    }
+
+    public function getAdminDashboardApiMetrics(Request $request): JsonResponse
+    {
+        if (!$request->user() || !$request->user()->hasRole('admin')) {
+            return response()->json(['error' => 'Unauthorized. Admin role required.'], 403);
+        }
+        // $this->adminDashboardService is already injected
+        $data = $this->adminDashboardService->getData($request);
+        // Optionally, you might want to fetch async data too if the API should include it:
+        // $avgResolutionData = $this->adminDashboardService->getAvgResolutionTimePerOrgData();
+        // $data['avg_resolution_time_per_org'] = $avgResolutionData;
+        // For now, let's stick to the main getData() for simplicity in this step.
+        return response()->json($data);
+    }
+
+    public function getLiderDashboardApiMetrics(Request $request): JsonResponse
+    {
+        if (!$request->user() || !$request->user()->hasRole('lider')) {
+            // Also allow admin to access this for broader testing/utility
+            if (!$request->user()->hasRole('admin')) {
+                 return response()->json(['error' => 'Unauthorized. Lider or Admin role required.'], 403);
+            }
+        }
+        // $this->liderDashboardService is already injected
+        $data = $this->liderDashboardService->getData($request->user(), $request);
+        return response()->json($data);
+    }
+
+    public function getMiembroDashboardApiMetrics(Request $request): JsonResponse
+    {
+        if (!$request->user() || !$request->user()->hasRole('miembro')) {
+            // Also allow admin to access this
+            if (!$request->user()->hasRole('admin')) {
+                return response()->json(['error' => 'Unauthorized. Miembro or Admin role required.'], 403);
+            }
+        }
+        // $this->miembroDashboardService is already injected
+        $data = $this->miembroDashboardService->getData($request->user(), $request);
         return response()->json($data);
     }
 }

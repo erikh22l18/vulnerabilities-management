@@ -46,6 +46,22 @@
                 @endif
             </p>
         </div>
+
+        {{-- Metric: Tasa de Remediación (Mis Proyectos Críticas/Altas) --}}
+        <div class="bg-sky-100 p-6 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-sky-800">Tasa de Remediación (Mis Proyectos Críticas/Altas)</h3>
+            <p class="text-3xl font-bold text-sky-900 mt-2">
+                {{ isset($data['critical_high_remediation_rate_projects']) ? number_format($data['critical_high_remediation_rate_projects'], 1) . '%' : 'N/A' }}
+            </p>
+        </div>
+
+        {{-- Metric: Remediación a Tiempo (Mis Proyectos %) --}}
+        <div class="bg-teal-100 p-6 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-teal-800">Remediación a Tiempo (Mis Proyectos %)</h3>
+            <p class="text-3xl font-bold text-teal-900 mt-2">
+                {{ isset($data['on_time_remediation_percentage_projects']) ? number_format($data['on_time_remediation_percentage_projects'], 1) . '%' : 'N/A' }}
+            </p>
+        </div>
     </div>
 
     {{-- Further sections for lider dashboard --}}

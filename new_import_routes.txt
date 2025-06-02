@@ -1,0 +1,26 @@
+<?php // This is just for syntax highlighting, remove this line when adding to web.php
+
+use App\Http\Controllers\VulnerabilityImportController; // Adjust namespace if controller is elsewhere, e.g. App\Domain\Vulnerabilities\Controllers
+use App\Domain\Vulnerabilities\Controllers\VulnerabilityController; // For existing chargeFile/uploadFile routes
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
+    // Routes for viewing import history and errors
+    Route::get('/vulnerabilities/imports', [VulnerabilityImportController::class, 'index'])->name('vulnerabilities.imports.index');
+    Route::get('/vulnerabilities/imports/{importBatch}/errors', [VulnerabilityImportController::class, 'showErrors'])->name('vulnerabilities.imports.errors');
+
+    // Existing routes for initiating and processing import (ensure these are correctly placed)
+    Route::get('/vulnerabilities/import/charge', [VulnerabilityController::class, 'chargeFile'])->name('vulnerabilities.charge');
+    Route::post('/vulnerabilities/import/upload', [VulnerabilityController::class, 'uploadFile'])->name('vulnerabilities.upload');
+});
+
+/*
+Notes for adding to routes/web.php:
+1. Ensure the `use` statements at the top of your `routes/web.php` file include:
+   use App\Http\Controllers\VulnerabilityImportController;
+   use App\Domain\Vulnerabilities\Controllers\VulnerabilityController; // Or wherever it is
+2. Place the Route::middleware(...) group within your existing web routes, typically after other auth-protected routes.
+3. The routes for `vulnerabilities.charge` and `vulnerabilities.upload` might already exist from previous import functionality setup.
+   Ensure they are correctly defined and point to the appropriate controller methods.
+   If `chargeFile` and `uploadFile` methods were moved to `VulnerabilityImportController`, update the controller class in the routes.
+*/
+?>

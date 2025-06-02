@@ -44,8 +44,8 @@ class MiembroDashboardService
 
         return Task::where('assigned_to', $user->id)
             ->whereIn('status', ['Completada', 'Cerrada']) // Assuming these are terminal statuses
-            ->whereNotNull('resolved_at') // Ensure resolved_at is not null
-            ->where('resolved_at', '>=', $thirtyDaysAgo)
+            ->whereNotNull('completed_at') // Ensure completed_at is not null
+            ->where('completed_at', '>=', $thirtyDaysAgo)
             ->count();
     }
 
@@ -57,7 +57,7 @@ class MiembroDashboardService
 
         $resolvedTasksWithDueDate = Task::where('assigned_to', $user->id)
             ->whereIn('status', ['Completada', 'Cerrada'])
-            ->whereNotNull('resolved_at')
+            ->whereNotNull('completed_at')
             ->whereNotNull('due_date')
             ->get();
 
@@ -67,9 +67,9 @@ class MiembroDashboardService
 
         $resolvedOnTimeCount = 0;
         foreach ($resolvedTasksWithDueDate as $task) {
-            $resolvedAtDate = Carbon::parse($task->resolved_at)->startOfDay();
+            $completedAtDate = Carbon::parse($task->completed_at)->startOfDay();
             $dueDate = Carbon::parse($task->due_date)->startOfDay();
-            if ($resolvedAtDate->lte($dueDate)) {
+            if ($completedAtDate->lte($dueDate)) {
                 $resolvedOnTimeCount++;
             }
         }

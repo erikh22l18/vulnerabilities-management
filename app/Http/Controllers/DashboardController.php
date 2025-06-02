@@ -55,8 +55,8 @@ class DashboardController extends Controller
                 'user_id' => $user->id,
                 'action' => 'view_dashboard',
                 'description' => "User viewed {$dashboard_type} dashboard.",
-                'auditable_type' => 'Dashboard',
-                'auditable_id' => null,
+                'auditable_type' => \App\Models\User::class,
+                'auditable_id' => $user->id,
             ]);
         }
 

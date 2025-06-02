@@ -26,6 +26,11 @@ Route::middleware([
 ])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    // Route for fetching admin-specific metric: Average Resolution Time by Organization
+    Route::get('/dashboard/admin/metrics/avg-resolution-time-orgs', [DashboardController::class, 'getAdminAvgResolutionTimeByOrg'])
+        ->name('dashboard.admin.avgResolutionTimeOrgs');
+        // ->middleware('auth'); // auth is already applied by the group. Role check is in controller.
+
     // Routes for comment and changeState moved here
     Route::post('/vulnerabilities/{vulnerability}/comment', [VulnerabilityController::class, 'comment'])
         ->name('vulnerabilities.comment');

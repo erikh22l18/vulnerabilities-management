@@ -73,6 +73,7 @@ class User extends Authenticatable
         'identification', // User's identification number (e.g., national ID, employee ID)
         'area',           // Functional area or department of the user
         'organization_id', // ID of the organization the user belongs to
+        'last_login_at',
     ];
 
     /**
@@ -108,6 +109,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed', // Automatically hashes passwords when set
             'identification' => 'encrypted', // Encrypts the identification field
+            'last_login_at' => 'datetime',
         ];
     }
 

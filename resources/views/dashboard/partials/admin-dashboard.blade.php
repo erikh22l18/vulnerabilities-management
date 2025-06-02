@@ -1,7 +1,12 @@
 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6 md:p-8">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Dashboard de Administrador</h2>
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-semibold text-gray-800">Dashboard de Administrador</h2>
+        <button id="customize-admin-dashboard-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Personalizar Dashboard
+        </button>
+    </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"> {{-- Changed lg:grid-cols-3 to lg:grid-cols-4 --}}
         {{-- Metric: Total Projects --}}
         <div class="bg-blue-100 p-6 rounded-lg shadow">
             <h3 class="text-lg font-medium text-blue-800">Total de Proyectos</h3>
@@ -57,6 +62,22 @@
                 @endif
             </p>
         </div>
+
+        {{-- Metric: Tasa de Remediación (Críticas/Altas) --}}
+        <div class="bg-sky-100 p-6 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-sky-800">Tasa de Remediación (Críticas/Altas)</h3>
+            <p class="text-3xl font-bold text-sky-900 mt-2">
+                {{ isset($data['critical_high_remediation_rate']) ? number_format($data['critical_high_remediation_rate'], 1) . '%' : 'N/A' }}
+            </p>
+        </div>
+
+        {{-- Metric: Remediación a Tiempo (%) --}}
+        <div class="bg-teal-100 p-6 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-teal-800">Remediación a Tiempo (%)</h3>
+            <p class="text-3xl font-bold text-teal-900 mt-2">
+                {{ isset($data['on_time_remediation_percentage']) ? number_format($data['on_time_remediation_percentage'], 1) . '%' : 'N/A' }}
+            </p>
+        </div>
     </div>
 
     {{-- Section: Average Vulnerability Resolution Time by Organization --}}
@@ -91,6 +112,134 @@
     @endif
 </div>
 
+{{-- Modal for Dashboard Customization --}}
+<div id="admin-dashboard-customize-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden">
+    <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-lg mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-semibold text-gray-800">Personalizar Dashboard de Administrador</h3>
+            <button id="admin-customize-modal-close-btn" class="text-gray-600 hover:text-gray-900 text-2xl">&times;</button>
+        </div>
+
+        <div class="space-y-4">
+            {{-- Conceptual Widget Toggles --}}
+            <div>
+                <input type="checkbox" id="widget_toggle_admin_metrics_total_projects" name="admin_metrics_total_projects" checked class="form-checkbox h-5 w-5 text-blue-600">
+                <label for="widget_toggle_admin_metrics_total_projects" class="ml-2 text-gray-700">Mostrar Total de Proyectos</label>
+            </div>
+            <div>
+                <input type="checkbox" id="widget_toggle_admin_metrics_total_users" name="admin_metrics_total_users" checked class="form-checkbox h-5 w-5 text-blue-600">
+                <label for="widget_toggle_admin_metrics_total_users" class="ml-2 text-gray-700">Mostrar Total de Usuarios</label>
+            </div>
+            <div>
+                <input type="checkbox" id="widget_toggle_admin_metrics_critical_vulnerabilities" name="admin_metrics_critical_vulnerabilities" checked class="form-checkbox h-5 w-5 text-blue-600">
+                <label for="widget_toggle_admin_metrics_critical_vulnerabilities" class="ml-2 text-gray-700">Mostrar Vulnerabilidades Críticas Abiertas</label>
+            </div>
+            <div>
+                <input type="checkbox" id="widget_toggle_admin_metrics_overdue_vulnerabilities" name="admin_metrics_overdue_vulnerabilities" checked class="form-checkbox h-5 w-5 text-blue-600">
+                <label for="widget_toggle_admin_metrics_overdue_vulnerabilities" class="ml-2 text-gray-700">Mostrar Vulnerabilidades Vencidas</label>
+            </div>
+            <div>
+                <input type="checkbox" id="widget_toggle_admin_metrics_sla_compliance" name="admin_metrics_sla_compliance" checked class="form-checkbox h-5 w-5 text-blue-600">
+                <label for="widget_toggle_admin_metrics_sla_compliance" class="ml-2 text-gray-700">Mostrar Cumplimiento SLA</label>
+            </div>
+            <div>
+                <input type="checkbox" id="widget_toggle_admin_metrics_inactive_users" name="admin_metrics_inactive_users" checked class="form-checkbox h-5 w-5 text-blue-600">
+                <label for="widget_toggle_admin_metrics_inactive_users" class="ml-2 text-gray-700">Mostrar Usuarios Inactivos</label>
+            </div>
+            <div>
+                <input type="checkbox" id="widget_toggle_admin_section_avg_resolution_time" name="admin_section_avg_resolution_time" checked class="form-checkbox h-5 w-5 text-blue-600">
+                <label for="widget_toggle_admin_section_avg_resolution_time" class="ml-2 text-gray-700">Mostrar Sección: Tiempo Promedio de Resolución</label>
+            </div>
+            <div>
+                <input type="checkbox" id="widget_toggle_admin_section_quick_management" name="admin_section_quick_management" checked class="form-checkbox h-5 w-5 text-blue-600">
+                <label for="widget_toggle_admin_section_quick_management" class="ml-2 text-gray-700">Mostrar Sección: Gestión Rápida</label>
+            </div>
+            <div>
+                <input type="checkbox" id="widget_toggle_admin_section_global_alerts" name="admin_section_global_alerts" checked class="form-checkbox h-5 w-5 text-blue-600">
+                <label for="widget_toggle_admin_section_global_alerts" class="ml-2 text-gray-700">Mostrar Sección: Alertas Globales</label>
+            </div>
+        </div>
+
+        <div class="mt-8 flex justify-end space-x-3">
+            <button id="admin-customize-modal-cancel-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
+                Cancelar
+            </button>
+            <button type="button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                Guardar Cambios (No funcional)
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Script for Async Loading of Avg Resolution Time
+    const avgResTimeContainer = document.getElementById('avg-resolution-time-orgs-container');
+    if (avgResTimeContainer) {
+        // ... (existing async loading script remains here, unchanged by this diff) ...
+        // For brevity, the existing script content is not repeated in this diff block
+        // but it should be assumed to be present if it was in the original search block.
+        // The following search block will target the end of it to append new JS.
+    }
+
+    // Script for Modal Toggle
+    const customizeBtn = document.getElementById('customize-admin-dashboard-btn');
+    const customizeModal = document.getElementById('admin-dashboard-customize-modal');
+    const closeModalBtn = document.getElementById('admin-customize-modal-close-btn');
+    const cancelModalBtn = document.getElementById('admin-customize-modal-cancel-btn'); // Added cancel button
+
+    if (customizeBtn && customizeModal && closeModalBtn && cancelModalBtn) {
+        customizeBtn.addEventListener('click', () => {
+            customizeModal.classList.remove('hidden');
+        });
+        closeModalBtn.addEventListener('click', () => {
+            customizeModal.classList.add('hidden');
+        });
+        cancelModalBtn.addEventListener('click', () => { // Also hide modal on cancel
+            customizeModal.classList.add('hidden');
+        });
+        // Optional: Close modal if user clicks outside of it
+        customizeModal.addEventListener('click', function(event) {
+            if (event.target === customizeModal) {
+                customizeModal.classList.add('hidden');
+            }
+        });
+    }
+});
+
+// The original script for avg-resolution-time-orgs-container continues below if it was there.
+// This diff only shows the addition of the modal and its JS.
+// The tool should handle appending this correctly.
+// For the sake of this specific diff, let's assume the previous script block for avg-resolution-time ends here.
+// And the new script for modal is added.
+
+// If the original script for avg-resolution-time-orgs-container was inside the DOMContentLoaded listener,
+// then the modal JS should also be inside that same listener, or a new one.
+// The following shows placing the modal JS inside the existing DOMContentLoaded listener.
+
+// (Content of avg-resolution-time-orgs-container script)
+// ...
+// (End of avg-resolution-time-orgs-container script)
+
+// This is just a placeholder to ensure the diff tool understands where to append the modal JS
+// if the original script was more complex.
+// The actual merge should be:
+// document.addEventListener('DOMContentLoaded', function () {
+//   // ... existing avg-resolution-time script ...
+//
+//   // ... new modal toggle script ...
+// });
+
+// For this tool, I'll assume the previous script block ended before this new one.
+// Or that this new script content for modal is added *within* the existing DOMContentLoaded.
+// The diff provided for the <script> tag should append the modal JS logic
+// within the existing DOMContentLoaded listener.
+
+// Let's refine the script part of the diff to make it clearer.
+// The following search block should be the start of the existing script.
+// Then the replace block will show the *combined* script.
+
+</script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const container = document.getElementById('avg-resolution-time-orgs-container');
@@ -171,8 +320,34 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .catch(error => {
                 console.error('Error fetching average resolution times:', error);
-                container.innerHTML = '<p class="text-red-500">Error al cargar los datos de tiempo de resolución. Por favor, intente recargar la página.</p>';
+                avgResTimeContainer.innerHTML = '<p class="text-red-500">Error al cargar los datos de tiempo de resolución. Por favor, intente recargar la página.</p>';
             });
+    } // End of if (avgResTimeContainer)
+
+    // Script for Modal Toggle
+    const customizeBtn = document.getElementById('customize-admin-dashboard-btn');
+    const customizeModal = document.getElementById('admin-dashboard-customize-modal');
+    const closeModalBtn = document.getElementById('admin-customize-modal-close-btn');
+    const cancelModalBtn = document.getElementById('admin-customize-modal-cancel-btn');
+
+    if (customizeBtn && customizeModal && closeModalBtn && cancelModalBtn) {
+        customizeBtn.addEventListener('click', () => {
+            customizeModal.classList.remove('hidden');
+        });
+        closeModalBtn.addEventListener('click', () => {
+            customizeModal.classList.add('hidden');
+        });
+        cancelModalBtn.addEventListener('click', () => {
+            customizeModal.classList.add('hidden');
+        });
+        // Optional: Close modal if user clicks outside of it
+        customizeModal.addEventListener('click', function(event) {
+            // Check if the click is directly on the modal background (event.target is the modal itself)
+            // and not on a child element.
+            if (event.target === customizeModal) {
+                customizeModal.classList.add('hidden');
+            }
+        });
     }
 });
 </script>

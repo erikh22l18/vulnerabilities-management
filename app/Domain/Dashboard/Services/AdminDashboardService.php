@@ -19,11 +19,11 @@ class AdminDashboardService
             'total_projects' => Project::count(),
             'total_users' => User::count(),
             // Add more admin-specific data points here later
-            'critical_open_vulnerabilities_count' => Vulnerability::whereIn('severity', ['high', 'critical'])
-                ->whereIn('status', ['open', 'in-progress'])
+            'critical_open_vulnerabilities_count' => Vulnerability::whereIn('severity_level', ['Alta', 'Crítica'])
+                ->whereIn('status', ['Detectada', 'En tratamiento'])
                 ->count(),
-            'overdue_vulnerabilities_count' => Vulnerability::where('due_date', '<', now())
-                ->whereNotIn('status', ['resolved', 'closed'])
+            'overdue_vulnerabilities_count' => Vulnerability::where('resolution_deadline', '<', now())
+                ->whereNotIn('status', ['Resuelta', 'Cerrada'])
                 ->count(),
             'sla_compliance_percentage' => -1, // Placeholder: Specific SLA logic needed
             // Assuming User model has last_login_at. If not, this will throw an error.
@@ -31,6 +31,29 @@ class AdminDashboardService
             'inactive_users_count' => User::where('last_login_at', '<', now()->subDays(30))->count(),
             // 'avg_resolution_time_per_org' will be fetched via a separate API call
         ];
+
+        // Calculate critical_high_remediation_rate
+        $resolvedCriticalHighCount = Vulnerability::whereIn('severity_level', ['Alta', 'Crítica'])
+            ->whereIn('status', ['Resuelta', 'Cerrada'])
+            ->count();
+        $totalCriticalHighCount = Vulnerability::whereIn('severity_level', ['Alta', 'Crítica'])
+            ->count();
+
+        $data['critical_high_remediation_rate'] = $totalCriticalHighCount > 0 ?
+            round(($resolvedCriticalHighCount / $totalCriticalHighCount) * 100, 2) : 0.0;
+
+        // Calculate on_time_remediation_percentage
+        $onTimeResolvedCount = Vulnerability::whereIn('status', ['Resuelta', 'Cerrada'])
+            ->whereNotNull('resolution_deadline')
+            ->whereNotNull('resolved_at') // Ensure resolved_at exists for comparison
+            ->whereRaw('DATE(resolved_at) <= DATE(resolution_deadline)') // Compare date parts
+            ->count();
+        $totalDeadlineResolvedCount = Vulnerability::whereIn('status', ['Resuelta', 'Cerrada'])
+            ->whereNotNull('resolution_deadline')
+            ->count();
+
+        $data['on_time_remediation_percentage'] = $totalDeadlineResolvedCount > 0 ?
+            round(($onTimeResolvedCount / $totalDeadlineResolvedCount) * 100, 2) : 0.0;
 
         // Sample global alerts
         $data['global_alerts'] = [
@@ -45,7 +68,11 @@ class AdminDashboardService
     {
         $avgResolutionTime = [];
         $organizations = Organization::with(['vulnerabilities' => function ($query) {
-            $query->where('status', 'resolved')->whereNotNull('resolved_at')->whereNotNull('created_at');
+            // Assuming 'Resuelta' is the status for calculating resolution time.
+            // If 'Cerrada' also counts, this should be whereIn('status', ['Resuelta', 'Cerrada']).
+            $query->where('status', 'Resuelta')
+                  ->whereNotNull('resolved_at')
+                  ->whereNotNull('created_at');
         }])->get();
 
         foreach ($organizations as $org) {

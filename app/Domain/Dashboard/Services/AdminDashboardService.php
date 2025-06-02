@@ -34,7 +34,7 @@ class AdminDashboardService
 
         // Calculate critical_high_remediation_rate
         $resolvedCriticalHighCount = Vulnerability::whereIn('severity_level', ['Alta', 'Crítica'])
-            ->whereIn('status', ['Resuelta', 'Cerrada'])
+            ->whereIn('state', ['Resuelta', 'Cerrada'])
             ->count();
         $totalCriticalHighCount = Vulnerability::whereIn('severity_level', ['Alta', 'Crítica'])
             ->count();
@@ -43,12 +43,12 @@ class AdminDashboardService
             round(($resolvedCriticalHighCount / $totalCriticalHighCount) * 100, 2) : 0.0;
 
         // Calculate on_time_remediation_percentage
-        $onTimeResolvedCount = Vulnerability::whereIn('status', ['Resuelta', 'Cerrada'])
+        $onTimeResolvedCount = Vulnerability::whereIn('state', ['Resuelta', 'Cerrada'])
             ->whereNotNull('resolution_deadline')
             ->whereNotNull('resolved_at') // Ensure resolved_at exists for comparison
             ->whereRaw('DATE(resolved_at) <= DATE(resolution_deadline)') // Compare date parts
             ->count();
-        $totalDeadlineResolvedCount = Vulnerability::whereIn('status', ['Resuelta', 'Cerrada'])
+        $totalDeadlineResolvedCount = Vulnerability::whereIn('state', ['Resuelta', 'Cerrada'])
             ->whereNotNull('resolution_deadline')
             ->count();
 

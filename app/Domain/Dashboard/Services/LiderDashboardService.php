@@ -52,7 +52,7 @@ class LiderDashboardService
         $endOfMonth = Carbon::now()->endOfMonth();
 
         $closedThisMonth = Vulnerability::whereIn('project_id', $projectIds)
-            ->whereIn('status', ['Resuelta', 'Cerrada'])
+            ->whereIn('state', ['Resuelta', 'Cerrada'])
             ->whereNotNull('resolved_at') // Ensure resolved_at is not null
             ->whereBetween('resolved_at', [$startOfMonth, $endOfMonth])
             ->count();
@@ -135,7 +135,7 @@ class LiderDashboardService
 
         $resolvedCriticalHighCount = Vulnerability::whereIn('project_id', $projectIds)
             ->whereIn('severity_level', ['Alta', 'Crítica'])
-            ->whereIn('status', ['Resuelta', 'Cerrada'])
+            ->whereIn('state', ['Resuelta', 'Cerrada'])
             ->count();
 
         $totalCriticalHighCount = Vulnerability::whereIn('project_id', $projectIds)
@@ -156,14 +156,14 @@ class LiderDashboardService
         }
 
         $onTimeResolvedCount = Vulnerability::whereIn('project_id', $projectIds)
-            ->whereIn('status', ['Resuelta', 'Cerrada'])
+            ->whereIn('state', ['Resuelta', 'Cerrada'])
             ->whereNotNull('resolution_deadline')
             ->whereNotNull('resolved_at')
             ->whereRaw('DATE(resolved_at) <= DATE(resolution_deadline)')
             ->count();
 
         $totalDeadlineResolvedCount = Vulnerability::whereIn('project_id', $projectIds)
-            ->whereIn('status', ['Resuelta', 'Cerrada'])
+            ->whereIn('state', ['Resuelta', 'Cerrada'])
             ->whereNotNull('resolution_deadline')
             ->count();
 

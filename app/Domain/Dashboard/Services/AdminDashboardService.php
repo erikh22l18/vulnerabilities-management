@@ -26,9 +26,7 @@ class AdminDashboardService
                 ->whereNotIn('state', ['Resuelta', 'Cerrada'])
                 ->count(),
             'sla_compliance_percentage' => -1, // Placeholder: Specific SLA logic needed
-            // Assuming User model has last_login_at. If not, this will throw an error.
-            // Add a check or use a different approach if last_login_at is not guaranteed.
-            'inactive_users_count' => User::where('last_login_at', '<', now()->subDays(30))->count(),
+            'inactive_users_count' => 0, // Feature disabled: 'last_login_at' column missing from 'users' table. To enable, (re-)add column via migration.
             // 'avg_resolution_time_per_org' will be fetched via a separate API call
         ];
 

@@ -51,7 +51,7 @@ class DatabaseSeeder extends Seeder
             'Organización Gamma' => ['GAMMA', 'Oficina Central, Ciudad C'],
         ];
         $admin = User::where('email', 'admin@example.com')->first();
-        $states = ['Detectada', 'Asignada', 'En tratamiento', 'Resuelta', 'Cerrada'];
+        $states = ['Detectada', 'En tratamiento', 'Resuelta', 'Cerrada'];
         $severityLevels = ['Crítico', 'Alto', 'Medio', 'Bajo'];
         $types = VulnerabilityType::pluck('id')->toArray();
 

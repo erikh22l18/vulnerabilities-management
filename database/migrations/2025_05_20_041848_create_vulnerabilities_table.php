@@ -42,6 +42,7 @@ return new class extends Migration
 
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
 
+            $table->timestamp('resolved_at')->nullable();
             $table->timestamps();
 
             // $table->index('title'); // Removed index on title

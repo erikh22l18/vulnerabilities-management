@@ -207,8 +207,11 @@ class ProjectController extends Controller
                         );
         });
 
+        $vulnerabilityStatsByStatus = $vulnerabilities->groupBy('state')->map->count();
+        $vulnerabilityStatsBySeverity = $vulnerabilities->groupBy('severity_level')->map->count();
+
         // Generate PDF using barryvdh/laravel-dompdf.
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('projects.report.pdf', compact('project', 'vulnerabilities'))
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('projects.report.pdf', compact('project', 'vulnerabilities', 'vulnerabilityStatsByStatus', 'vulnerabilityStatsBySeverity'))
             ->setPaper('A4', 'landscape'); // Set paper size to A4 landscape
 
         // Download the PDF with a dynamic, descriptive name.

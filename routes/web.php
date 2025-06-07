@@ -61,6 +61,15 @@ Route::middleware([
         Route::get('/vulnerabilities/charge', [VulnerabilityController::class, 'chargeFile'])
             ->name('vulnerabilities.charge');
 
+        // New Multi-Step Import Routes
+        Route::post('/vulnerabilities/import/step1', [VulnerabilityController::class, 'importStep1Submit'])->name('vulnerabilities.import.step1.submit');
+        Route::get('/vulnerabilities/import/step2/{tempFileId}', [VulnerabilityController::class, 'importStep2Show'])->name('vulnerabilities.import.step2.show');
+        Route::post('/vulnerabilities/import/step2/{tempFileId}', [VulnerabilityController::class, 'importStep2Submit'])->name('vulnerabilities.import.step2.submit');
+        Route::get('/vulnerabilities/import/step3/{tempFileId}', [VulnerabilityController::class, 'importStep3Show'])->name('vulnerabilities.import.step3.show');
+        Route::post('/vulnerabilities/import/step3/validate-rows/{tempFileId}', [VulnerabilityController::class, 'importStep3ValidateRows'])->name('vulnerabilities.import.step3.validate_rows');
+        Route::post('/vulnerabilities/import/step3/submit/{tempFileId}', [VulnerabilityController::class, 'importStep3Submit'])->name('vulnerabilities.import.step3.submit');
+        // End New Multi-Step Import Routes
+
         Route::post('/vulnerabilities/upload', [VulnerabilityController::class, 'uploadFile'])
             ->name('vulnerabilities.upload');
 

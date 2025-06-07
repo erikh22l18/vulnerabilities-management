@@ -82,7 +82,17 @@
 </head>
 <body>
     <div class="header">
-        Informe Consolidado de Vulnerabilidades
+        <table style="width: 100%; border: none;">
+            <tr>
+                <td style="width: 30%; text-align: left; border: none;">
+                    <!-- **TODO: Add Organization Logo Here** -->
+                    <span style="font-size: 10px; color: #777;">[Logo de Organización Placeholder]</span>
+                </td>
+                <td style="width: 70%; text-align: right; border: none; font-size: 12px; font-weight: bold;">
+                    Informe Consolidado de Vulnerabilidades
+                </td>
+            </tr>
+        </table>
     </div>
 
     <div class="footer">
@@ -96,7 +106,37 @@
             <p><strong>Nombre del Proyecto:</strong> {{ $project->name }}</p>
             <p><strong>Identificador:</strong> {{ $project->identifier }}</p>
             <p><strong>Organización:</strong> {{ $project->organization->name ?? 'N/A' }}</p>
+            <p><strong>Estado del Proyecto:</strong> {{ ucfirst($project->status ?? 'N/A') }}</p>
+            <p><strong>Objetivo General:</strong> {{ $project->general_objective ?? 'No especificado' }}</p>
             <p><strong>Fecha del Informe:</strong> {{ \Carbon\Carbon::now()->format('d/m/Y') }}</p>
+        </div>
+
+        <h2>Resumen de Vulnerabilidades</h2>
+        <div class="info-block" style="margin-bottom: 15px; padding: 10px; border: 1px solid #eee; background-color: #f9f9f9;">
+            <table style="width: 100%; border: none;">
+                <tr>
+                    <td style="width: 50%; vertical-align: top; border: none; padding-right: 10px;">
+                        <p style="margin-bottom: 5px;"><strong>Por Estado:</strong></p>
+                        <ul style="list-style-type: disc; margin-left: 20px; padding-left: 0;">
+                            @forelse($vulnerabilityStatsByStatus as $status => $count)
+                                <li>{{ ucfirst($status) }}: {{ $count }}</li>
+                            @empty
+                                <li>N/A</li>
+                            @endforelse
+                        </ul>
+                    </td>
+                    <td style="width: 50%; vertical-align: top; border: none; padding-left: 10px;">
+                        <p style="margin-bottom: 5px;"><strong>Por Severidad:</strong></p>
+                        <ul style="list-style-type: disc; margin-left: 20px; padding-left: 0;">
+                            @forelse($vulnerabilityStatsBySeverity as $severity => $count)
+                                <li>{{ ucfirst($severity) }}: {{ $count }}</li>
+                            @empty
+                                <li>N/A</li>
+                            @endforelse
+                        </ul>
+                    </td>
+                </tr>
+            </table>
         </div>
 
         <h2>Listado de Vulnerabilidades</h2>

@@ -11,11 +11,18 @@
                 <div class="p-6 lg:p-8 bg-white border-b border-gray-200">
                     <div class="flex justify-between items-center mb-6">
                         <h1 class="text-2xl font-semibold text-gray-800">{{ $project->name }}</h1>
-                        @can('update', $project)
-                            <a href="{{ route('projects.edit', $project) }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded shadow">
-                                Editar Proyecto
-                            </a>
-                        @endcan
+                        <div>
+                            @can('update', $project)
+                                <a href="{{ route('projects.edit', $project) }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded shadow">
+                                    Editar Proyecto
+                                </a>
+                            @endcan
+                            @can('viewPdfReport', $project)
+                                <a href="{{ route('projects.report.generate_pdf', $project) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow ml-2" target="_blank">
+                                    Generar Reporte PDF
+                                </a>
+                            @endcan
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">

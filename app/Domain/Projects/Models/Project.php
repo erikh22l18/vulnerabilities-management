@@ -31,6 +31,30 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Project extends Model
 {
+    /**
+     * Defines the desired order of vulnerability states for reporting.
+     * @var array<int, string>
+     */
+    public const VULNERABILITY_STATE_ORDER_FOR_REPORTING = [
+        'Detectada',
+        'Asignada',
+        'En tratamiento',
+        'Resuelta',
+        'Cerrada',
+    ];
+
+    /**
+     * Defines the desired order of vulnerability severities for reporting.
+     * @var array<int, string>
+     */
+    public const VULNERABILITY_SEVERITY_ORDER_FOR_REPORTING = [
+        'Crítica',
+        'Alta',
+        'Media',
+        'Baja',
+        'Informativa',
+    ];
+
     /** @use HasFactory<\Database\Factories\ProjectFactory> */
     use HasFactory;
 

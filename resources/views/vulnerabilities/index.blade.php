@@ -130,7 +130,7 @@
                                             </a>
                                             @endcan
 
-                                            @can('viewTasks', $vulnerability) // Corrected permission here
+                                            @can('viewTasks', $vulnerability)
                                             <!-- tareas -->
                                             <a href="{{ route('vulnerabilities.tasks.index', $vulnerability) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                 <div class="flex items-center">

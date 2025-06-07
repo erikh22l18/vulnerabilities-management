@@ -232,7 +232,7 @@ class TaskPolicy
             // if (!$projectToCheck || !$projectToCheck->users->contains($user->id)) {
             //     return false;
             // }
-            return $task->created_by == $user->id;
+            return $task->created_by == $user->id || $task->assigned_to == $user->id;
         }
         return false;
     }

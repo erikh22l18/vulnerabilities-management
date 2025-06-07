@@ -21,7 +21,7 @@
                     {{ $errors->first() }}
                 </div>
                 @endif
-                <form action="{{ route('vulnerabilities.upload') }}" method="POST" enctype="multipart/form-data" id="excel-upload-form">
+                <form action="{{ route('vulnerabilities.import.step1.submit') }}" method="POST" enctype="multipart/form-data" id="excel-upload-form">
                     @csrf
                     <div
                         id="drop-area"
@@ -37,27 +37,6 @@
                         <input type="file" name="file" id="excel-file" accept=".xlsx,.xls" class="hidden" required>
                     </div>
                     <div id="file-name" class="mt-2 text-gray-700"></div>
-                    <div class="flex items-center space-x-4 mt-6" id="validation-icons">
-                        <span id="icon-header" class="text-gray-400" title="Validar encabezado">
-                            <!-- Check icon -->
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" />
-                                <path d="M9 12l2 2l4 -4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                        </span>
-                        <span id="icon-form" class="text-gray-400" title="Validar datos del formulario">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" />
-                                <path d="M9 12l2 2l4 -4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                        </span>
-                        <span id="icon-upload" class="text-gray-400" title="Carga exitosa">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" />
-                                <path d="M9 12l2 2l4 -4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                        </span>
-                    </div>
                     <div class="flex justify-between mt-6">
                         <a href="{{ route('vulnerabilities.index') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded shadow transition">← Volver al listado</a>
                         <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white px-6 py-2 rounded shadow transition" id="import-btn">Importar</button>
@@ -72,25 +51,6 @@
         const fileName = document.getElementById('file-name');
         const form = document.getElementById('excel-upload-form');
         const importBtn = document.getElementById('import-btn');
-        const icons = {
-            header: document.getElementById('icon-header'),
-            form: document.getElementById('icon-form'),
-            upload: document.getElementById('icon-upload')
-        };
-
-        function setIconStatus(icon, status) {
-            // status: 'gray', 'green', 'red'
-            icon.classList.remove('text-gray-400', 'text-green-500', 'text-red-500');
-            if (status === 'green') icon.classList.add('text-green-500');
-            else if (status === 'red') icon.classList.add('text-red-500');
-            else icon.classList.add('text-gray-400');
-        }
-
-        function resetIcons() {
-            setIconStatus(icons.header, 'gray');
-            setIconStatus(icons.form, 'gray');
-            setIconStatus(icons.upload, 'gray');
-        }
 
         function handleDragOver(e) {
             e.preventDefault();
@@ -109,77 +69,10 @@
         fileInput.addEventListener('change', function() {
             if (fileInput.files.length) {
                 fileName.textContent = fileInput.files[0].name;
-                resetIcons();
             }
         });
 
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            importBtn.disabled = true;
-            resetIcons();
-
-            const file = fileInput.files[0];
-            if (!file) {
-                setIconStatus(icons.header, 'red');
-                importBtn.disabled = false;
-                alert('Selecciona un archivo.');
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('file', file);
-
-            // Paso 1: Validar encabezado y proyectos
-            fetch('{{ route('vulnerabilities.validateHeader') }}', {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: formData
-                    })
-                .then(res => res.json())
-                .then(data => {
-                    if (!data.success) {
-                        setIconStatus(icons.header, 'red');
-                        importBtn.disabled = false;
-                        alert(data.message);
-                        return;
-                    }
-
-                    setIconStatus(icons.header, 'green');
-
-                    // Paso 2: Validar contenido del formulario (campos por fila)
-                    setIconStatus(icons.form, 'gray');
-                    return fetch('{{ route('vulnerabilities.validateRows') }}', {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: formData
-                        });
-                })
-                .then(res => res ? res.json() : null)
-                .then(data => {
-                    if (data && !data.success) {
-                        setIconStatus(icons.form, 'red');
-                        importBtn.disabled = false;
-                        alert(data.message);
-                        return;
-                    }
-
-                    if (data) {
-                        setIconStatus(icons.form, 'green');
-                    }
-
-                    // Paso 3: Subida real
-                    setIconStatus(icons.upload, 'green');
-                    form.submit();
-                })
-                .catch(() => {
-                    setIconStatus(icons.header, 'red');
-                    importBtn.disabled = false;
-                    alert('Error validando el archivo.');
-                });
-        });
+        // The submit event listener with fetch calls has been removed.
+        // The form will now submit directly to the backend.
     </script>
 </x-app-layout>

@@ -45,6 +45,12 @@
     - Notificación al usuario al finalizar (éxito, error parcial, fallo total) con resumen y enlace a detalles si hay errores.
     - Interfaz para ver historial de importaciones (`vulnerabilities.imports.index`) y detalles de errores por lote (`vulnerabilities.imports.errors`).
     - Administradores ven todos los lotes; otros usuarios solo los suyos.
+    - **Actualizaciones de Progreso en Tiempo Real:** Durante el procesamiento de un lote de importación, la página de historial de importaciones (`vulnerabilities.imports.index`) mostrará actualizaciones en tiempo real del progreso. Esto incluye:
+        - Una barra de progreso visual que indica el porcentaje de filas procesadas.
+        - Mensajes de estado actualizados (ej. "Procesando X de Y filas").
+        - Visualización inmediata de errores a nivel de fila si ocurren durante la importación.
+        - Estado final del lote una vez completado (ej. "Completado Exitosamente", "Completado con Errores", "Fallido").
+    - **Estado:** IMPLEMENTADO
 - **Estado:** IMPLEMENTADO.
 
 #### RQF1.1.5 - Manejo de Duplicados y Actualizaciones

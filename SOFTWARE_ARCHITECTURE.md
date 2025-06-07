@@ -174,5 +174,62 @@ tests/
 -   **Composer:** Manejador de dependencias PHP.
 -   **NPM/Yarn & Vite/Webpack:** Para la gestión de assets frontend y compilación.
 
+## 8. Real-time Vulnerability Import Progress
+
+### 8.1. Overview
+To provide users with immediate feedback during bulk vulnerability imports, the system utilizes Laravel Reverb for WebSocket communication, coupled with Laravel Queues (driven by Redis) for background job processing. This allows the frontend to display real-time progress updates as import files are processed.
+
+### 8.2. Broadcasting Events
+A series of events are dispatched during the import lifecycle. These events are defined in `app/Events/` and implement `ShouldBroadcastNow` for immediate broadcasting. They are broadcast on a private channel specific to each import batch: `import-batch.{batchId}`.
+
+-   **`VulnerabilityImportStarted`**:
+    -   **Purpose**: Signals the beginning of an import batch processing.
+    -   **Payload**: `batchId` (string), `totalRows` (int - number of data rows to process).
+-   **`VulnerabilityImportProgress`**:
+    -   **Purpose**: Provides updates on the number of rows processed.
+    -   **Payload**: `batchId` (string), `processedRows` (int).
+-   **`VulnerabilityImportFailedRow`**:
+    -   **Purpose**: Indicates a specific row failed validation or processing.
+    -   **Payload**: `batchId` (string), `rowNumber` (int - actual row number in the file), `errors` (array of error messages for the row).
+-   **`VulnerabilityImportCompleted`**:
+    -   **Purpose**: Signals the completion of an import batch.
+    -   **Payload**: `batchId` (string), `status` (string - e.g., 'completed_successfully', 'completed_with_errors', 'failed'), `importedCount` (int), `failedCount` (int), `message` (string - summary message).
+
+### 8.3. Backend Implementation
+
+-   **Event Dispatching**:
+    -   The `app/Imports/VulnerabilityImport.php` class is responsible for row-by-row processing within the import job. It dispatches:
+        -   `VulnerabilityImportStarted` once, after initial setup and row counting.
+        -   `VulnerabilityImportProgress` after each row (or a chunk of rows) is attempted.
+        -   `VulnerabilityImportFailedRow` if a row encounters validation or processing errors.
+        -   It also updates `successful_rows` and `failed_rows` counts directly on the `ImportBatch` model.
+    -   The `app/Jobs/ProcessVulnerabilityImportJob.php` class (which uses `VulnerabilityImport`) dispatches the final `VulnerabilityImportCompleted` event from its `handle()` method's `finally` block (for normal completion) or from its `failed()` method (for catastrophic job failures). This event uses the final counts and status from the `ImportBatch` model.
+-   **Channel Authorization**:
+    -   Authorization for the private channel `import-batch.{batchId}` is defined in `routes/channels.php`.
+    -   The logic typically allows the user who initiated the import batch (`ImportBatch->user_id`) or any user with an 'admin' role to listen to the channel.
+-   **Queue Configuration**:
+    -   The `.env` file is configured with `QUEUE_CONNECTION=redis` to ensure import jobs are processed via Redis.
+    -   Laravel Reverb itself uses Redis for some of its internal operations if configured to do so, but its primary role here is as the WebSocket server.
+
+### 8.4. Frontend Implementation
+
+-   **Echo & Reverb Setup**:
+    -   Laravel Echo is configured in `resources/js/bootstrap.js`.
+    -   It's set up to use `reverb` as the broadcaster, with connection details (app key, host, port, scheme) sourced from Vite environment variables (e.g., `import.meta.env.VITE_REVERB_APP_KEY`), which are in turn populated from the `.env` file.
+-   **Listening for Events**:
+    -   The `resources/views/vulnerabilities/imports/index.blade.php` view contains JavaScript that:
+        -   Iterates through the displayed import batches.
+        -   For batches in a "processing" or "pending" state, it uses Laravel Echo to subscribe to their specific `import-batch.{batchId}` private channel.
+        -   It listens for the `.import.started`, `.import.progress`, `.import.rowFailed`, and `.import.completed` events (note the dot prefix for event names when listening).
+        -   Upon receiving these events, the JavaScript dynamically updates the DOM to reflect progress (e.g., updating progress bars, status messages, displaying row-specific errors, and updating final counts in the table).
+        -   Once an `import.completed` event is received, Echo disconnects from that specific batch channel.
+
+### 8.5. Runtime Components
+For the real-time import progress feature to function correctly, the following services must be running:
+
+-   **Queue Worker**: `php artisan queue:work` (configured to use the Redis driver). This process picks up and executes the `ProcessVulnerabilityImportJob`.
+-   **Reverb Server**: `php artisan reverb:start`. This starts the WebSocket server that handles broadcasting.
+-   **Redis Server**: The Redis service itself must be running, as it's used for both Laravel Queues and potentially by Reverb.
+
 ---
 Este documento proporciona una instantánea de la arquitectura. Puede evolucionar a medida que el sistema crece y se adapta a nuevos requerimientos.

@@ -65,6 +65,41 @@
     - `state`: Puede tener un valor por defecto como 'Detectada' si no se especifica y es válido. (IMPLEMENTADO, por defecto en modelo/DB)
 - **Estado:** IMPLEMENTADO.
 
+#### RQF1.1.7 - Proceso de Importación Asistida por Pasos (Multi-Step Form)
+- **Descripción General:** Para mejorar la experiencia de usuario y la fiabilidad de la carga masiva, el sistema ofrece una interfaz de importación asistida por pasos. Este proceso guía al usuario a través de validaciones progresivas antes de encolar el archivo para su procesamiento final en segundo plano.
+- **Referencia ISO 27001:** A.12.5.1, A.14.2.1
+- **Estado:** IMPLEMENTADO
+
+##### RQF1.1.7.1 - Flujo del Proceso Multi-Pasos
+- **Descripción:** El usuario interactúa con un formulario que se divide en varias etapas:
+    1.  **Paso 1: Carga de Archivo:**
+        *   El usuario selecciona o arrastra su archivo Excel (`.xlsx`, `.xls`).
+        *   El sistema realiza una validación inicial del tipo y tamaño del archivo.
+        *   El archivo se carga y se almacena temporalmente en el servidor.
+    2.  **Paso 2: Validación de Cabeceras:**
+        *   El sistema extrae y muestra las cabeceras del archivo cargado.
+        *   Se realiza una validación automática de las cabeceras contra la plantilla esperada.
+        *   El usuario confirma las cabeceras para proceder. Si hay errores, se informa al usuario, quien puede optar por cancelar y corregir su archivo.
+    3.  **Paso 3: Validación de Datos y Confirmación Final:**
+        *   El usuario puede solicitar una validación de todas las filas de datos del archivo.
+        *   El sistema procesa el archivo temporal y ejecuta las validaciones de datos (similares a las descritas en RQF1.1.3 para el job asíncrono, como existencia de proyectos, tipos de vulnerabilidad, usuarios, formatos de fecha, valores permitidos para estados, etc.).
+        *   Se presenta un resumen de los errores encontrados (si los hay) a nivel de fila, o un mensaje de éxito si los datos son válidos.
+        *   Si la validación de datos es corporativa (o si el usuario decide proceder a pesar de advertencias, según se defina la política), el usuario puede presionar el botón final "Importar".
+- **Estado:** IMPLEMENTADO
+
+##### RQF1.1.7.2 - Enlace con Procesamiento Asíncrono
+- **Descripción:** Una vez que el usuario completa el último paso y confirma la importación:
+    *   El archivo validado (almacenado temporalmente) se envía al job `ProcessVulnerabilityImportJob` para su procesamiento en segundo plano, tal como se describe en RQF1.1.2.
+    *   El archivo temporal se elimina del servidor.
+    *   El usuario es redirigido al historial de lotes de importación (`vulnerabilities.imports.index`) donde puede seguir el progreso del procesamiento asíncrono.
+- **Estado:** IMPLEMENTADO
+
+##### RQF1.1.7.3 - Gestión de Archivos Temporales
+- **Descripción:** Los archivos cargados durante el proceso multi-pasos se almacenan temporalmente.
+    *   Se eliminan automáticamente después de que el job de importación es despachado.
+    *   Se planea implementar una tarea programada (Artisan command) para limpiar archivos temporales huérfanos que puedan quedar si el usuario abandona el proceso a mitad de camino. (PENDIENTE - Limpieza automática de huérfanos)
+- **Estado:** PARCIALMENTE IMPLEMENTADO (Eliminación post-despacho implementada; limpieza de huérfanos pendiente).
+
 ### RQF2 - Gestión de usuarios, proyectos y organizaciones
 - **Registro de usuarios con campos como nombre, correo, área, organización y contraseña:** IMPLEMENTADO (campo 'área' añadido).
 - **Asignación de roles y permisos según estructura organizacional:** IMPLEMENTADO (roles Admin, Líder, Miembro con permisos definidos en `RolePermissionSeeder`). Se requiere lógica de Policies para restricciones más finas en `miembro`.

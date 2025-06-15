@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="py-8 bg-gradient-to-br from-blue-50 via-white to-blue-100 min-h-screen">
-        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-8">
                 <h1 class="text-2xl font-semibold text-gray-800 mb-6">Nueva Vulnerabilidad</h1>
                 <form action="{{ $viewModel->storeRoute }}" method="POST" enctype="multipart/form-data"
@@ -173,9 +173,9 @@
                         <textarea name="observations" id="observations" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" rows="2">{{ old('observations') }}</textarea>
                         @error('observations') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
-                    <div class="flex col-span-3 justify-between">
-                        <a href="{{ $viewModel->backRoute }}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded shadow transition">← Volver al listado</a>
-                        <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white px-6 py-2 rounded shadow transition">Registrar</button>
+                    <div class="flex flex-col sm:flex-row sm:justify-between col-span-1 sm:col-span-2 md:col-span-3 space-y-4 sm:space-y-0 mt-4">
+                        <a href="{{ $viewModel->backRoute }}" class="w-full sm:w-auto text-center sm:text-left bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded shadow transition">← Volver al listado</a>
+                        <button type="submit" class="w-full sm:w-auto bg-blue-700 hover:bg-blue-800 text-white px-6 py-2 rounded shadow transition">Registrar</button>
                     </div>
                 </form>
             </div>

@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6 md:p-8">
                 <x-validation-errors class="mb-4" />
 
@@ -94,11 +94,11 @@
                         </select>
                     </div>
 
-                    <div class="flex items-center justify-end mt-6">
-                        <a href="{{ url()->previous(route('tasks.index')) }}" class="text-sm text-gray-600 hover:text-gray-900 mr-4">
+                    <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-6">
+                        <a href="{{ url()->previous(route('tasks.index')) }}" class="w-full sm:w-auto text-center text-sm text-gray-600 hover:text-gray-900 mr-4">
                             Cancelar
                         </a>
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-md focus:outline-none focus:shadow-outline">
+                        <button type="submit" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-md focus:outline-none focus:shadow-outline">
                             Crear Tarea
                         </button>
                     </div>

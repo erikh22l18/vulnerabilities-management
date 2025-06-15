@@ -1,6 +1,6 @@
 <x-admin-layout>
     <div class="py-8 bg-gradient-to-br from-blue-50 via-white to-blue-100 min-h-screen">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-8">
                 <h1 class="text-2xl font-semibold text-gray-800 mb-6">Registrar Usuario</h1>
                 <form method="POST" action="{{ route('admin.users.store') }}" class="space-y-6">
@@ -66,8 +66,8 @@
                         </select>
                         @error('role') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
-                    <div class="flex justify-end">
-                        <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white px-6 py-2 rounded shadow transition">Registrar</button>
+                    <div class="flex flex-col sm:flex-row sm:justify-end mt-6">
+                        <button type="submit" class="w-full sm:w-auto bg-blue-700 hover:bg-blue-800 text-white px-6 py-2 rounded shadow transition">Registrar</button>
                     </div>
                 </form>
             </div>

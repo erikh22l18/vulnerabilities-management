@@ -26,6 +26,19 @@
                         {{ __('Vulnerabilidades') }}
                     </x-nav-link>
 
+                    {{-- Link to Users Management for Admin and Leader roles --}}
+                    @hasanyrole('admin|leader')
+                        <x-nav-link href="{{ route('admin.users.index') }}" :active="request()->routeIs('admin.users.*')">
+                            {{ __('Usuarios') }}
+                        </x-nav-link>
+                    @endhasanyrole
+
+                    {{-- Link to Organizations Management for Admin role --}}
+                    @role('admin')
+                        <x-nav-link href="{{ route('organizations.index') }}" :active="request()->routeIs('organizations.*')">
+                            {{ __('Organizaciones') }}
+                        </x-nav-link>
+                    @endrole
                 </div>
             </div>
 
@@ -161,6 +174,20 @@
             <x-responsive-nav-link href="{{ route('vulnerabilities.index') }}" :active="request()->routeIs('vulnerabilities.*')" class="text-gray-700 hover:text-blue-700 hover:bg-blue-50">
                 {{ __('Vulnerabilidades') }}
             </x-responsive-nav-link>
+
+            {{-- Responsive Link to Users Management for Admin and Leader roles --}}
+            @hasanyrole('admin|leader')
+                <x-responsive-nav-link href="{{ route('admin.users.index') }}" :active="request()->routeIs('admin.users.*')" class="text-gray-700 hover:text-blue-700 hover:bg-blue-50">
+                    {{ __('Usuarios') }}
+                </x-responsive-nav-link>
+            @endhasanyrole
+
+            {{-- Responsive Link to Organizations Management for Admin role --}}
+            @role('admin')
+                <x-responsive-nav-link href="{{ route('organizations.index') }}" :active="request()->routeIs('organizations.*')" class="text-gray-700 hover:text-blue-700 hover:bg-blue-50">
+                    {{ __('Organizaciones') }}
+                </x-responsive-nav-link>
+            @endrole
 
             {{-- Add other custom module links here, following the pattern above. --}}
             {{-- For example: --}}

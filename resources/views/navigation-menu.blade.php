@@ -153,6 +153,20 @@
             <x-responsive-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')" class="text-gray-700 hover:text-blue-700 hover:bg-blue-50">
                 {{ __('Panel principal') }}
             </x-responsive-nav-link>
+
+            <x-responsive-nav-link href="{{ route('projects.index') }}" :active="request()->routeIs('projects.*')" class="text-gray-700 hover:text-blue-700 hover:bg-blue-50">
+                {{ __('Proyectos') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link href="{{ route('vulnerabilities.index') }}" :active="request()->routeIs('vulnerabilities.*')" class="text-gray-700 hover:text-blue-700 hover:bg-blue-50">
+                {{ __('Vulnerabilidades') }}
+            </x-responsive-nav-link>
+
+            {{-- Add other custom module links here, following the pattern above. --}}
+            {{-- For example: --}}
+            {{-- <x-responsive-nav-link href="{{ route('nombre_ruta.index') }}" :active="request()->routeIs('nombre_ruta.*')" class="text-gray-700 hover:text-blue-700 hover:bg-blue-50"> --}}
+            {{--     {{ __('Nombre Modulo') }} --}}
+            {{-- </x-responsive-nav-link> --}}
         </div>
 
         <!-- Responsive Settings Options -->

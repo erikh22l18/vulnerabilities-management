@@ -46,7 +46,7 @@
                                 <th class="px-4 py-2 hidden md:table-cell text-sm">Estado</th>
                                 <th class="px-4 py-2 hidden sm:table-cell text-sm">Usuarios</th>
                                 <th class="px-4 py-2 hidden sm:table-cell text-sm">Vulnerabilidades</th>
-                                <th class="px-4 py-2 text-sm">Acciones</th>
+                                <th class="px-4 py-2 text-sm"><span class="sr-only">Acciones</span></th>
                             </tr>
                         </thead>
                         <tbody>

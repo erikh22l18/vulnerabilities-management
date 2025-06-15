@@ -43,7 +43,7 @@
                                 <th class="px-4 py-3">Estado</th>
                                 <th class="px-4 py-3">Prioridad</th>
                                 <th class="px-4 py-3 hidden sm:table-cell">Fecha Límite</th>
-                                <th class="px-4 py-3">Acciones</th>
+                                <th class="px-4 py-3"><span class="sr-only">Acciones</span></th>
                             </tr>
                         </thead>
                         <tbody class="text-gray-700">

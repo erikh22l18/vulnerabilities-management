@@ -49,9 +49,7 @@
                                                 {{ $displayName }}
                                             </th>
                                         @endforeach
-                                        <th class="px-3 py-3 sm:px-5 sm:py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                            Acciones
-                                        </th>
+                                        <th class="px-3 py-3 sm:px-5 sm:py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"><span class="sr-only">Acciones</span></th>
                                     </tr>
                                 </thead>
                                 <tbody class="text-gray-700">

@@ -4,7 +4,7 @@
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-8">
                 <h1 class="text-2xl font-semibold text-gray-800 mb-6">Nueva Vulnerabilidad</h1>
                 <form action="{{ $viewModel->storeRoute }}" method="POST" enctype="multipart/form-data"
-                    class="space-y-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-10 gap-y-4">
+                    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-10 gap-y-4">
                     @csrf
                     @if ($errors->any())
                     <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded mb-4">
@@ -54,7 +54,8 @@
                         :projects="$viewModel->projects"
                         :selected-project="old('project_id', $viewModel->project?->id)"
                         :assigned-users="old('assigned_users', [])"
-                        :responsible-id="old('responsible_id')" />
+                        :responsible-id="old('responsible_id')"
+                        class="col-span-1 sm:col-span-2 md:col-span-3" />
                     @endif
                     <div>
                         <label for="component" class="block font-medium text-gray-700 mb-1">Componente o módulo afectado</label>

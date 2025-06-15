@@ -51,29 +51,29 @@
                     <table class="w-full bg-white shadow rounded">
                         <thead>
                             <tr class="bg-blue-100 text-left">
-                                <th class="px-4 py-2">Título</th>
+                                <th class="px-4 py-2 text-sm">Título</th>
                                 @if(!$viewModel->context || $viewModel->context !== 'project')
-                                <th class="px-4 py-2 hidden md:table-cell">Proyecto</th>
+                                <th class="px-4 py-2 hidden md:table-cell text-sm">Proyecto</th>
                                 @endif
-                                <th class="px-4 py-2">Estado</th>
-                                <th class="px-4 py-2 hidden sm:table-cell">Prioridad</th>
+                                <th class="px-4 py-2 text-sm">Estado</th>
+                                <th class="px-4 py-2 hidden sm:table-cell text-sm">Prioridad</th>
                                 @if(!$viewModel->context || $viewModel->context !== 'user')
-                                <th class="px-4 py-2 hidden sm:table-cell">Usuarios</th>
+                                <th class="px-4 py-2 hidden sm:table-cell text-sm">Usuarios</th>
                                 @endif
-                                <th class="px-4 py-2">Acciones</th>
+                                <th class="px-4 py-2 text-sm">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($viewModel->vulnerabilities as $vulnerability)
                             <tr class="border-b hover:bg-blue-50 transition">
-                                <td class="px-4 py-2">{{ $vulnerability->title }}</td>
+                                <td class="px-4 py-2 text-sm">{{ $vulnerability->title }}</td>
                                 @if(!$viewModel->context || $viewModel->context !== 'project')
-                                <td class="px-4 py-2 hidden md:table-cell">{{ $vulnerability->project->name }}</td>
+                                <td class="px-4 py-2 hidden md:table-cell text-sm">{{ $vulnerability->project->name }}</td>
                                 @endif
-                                <td class="px-4 py-2">
+                                <td class="px-4 py-2 text-sm">
                                     <x-vulnerability-status :status="$vulnerability->state" />
                                 </td>
-                                <td class="px-4 py-2 hidden sm:table-cell">
+                                <td class="px-4 py-2 hidden sm:table-cell text-sm">
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                                             @switch($vulnerability->priority)
                                                 @case('Alta') bg-red-100 text-red-800 @break
@@ -84,11 +84,11 @@
                                     </span>
                                 </td>
                                 @if(!$viewModel->context || $viewModel->context !== 'user')
-                                <td class="px-4 py-2 hidden sm:table-cell">
+                                <td class="px-4 py-2 hidden sm:table-cell text-sm">
                                     <x-user-avatars :users="$vulnerability->assignedUsers" />
                                 </td>
                                 @endif
-                                <td class="px-4 py-2">
+                                <td class="px-4 py-2 text-sm">
                                     <div class="relative" x-data="{ open: false }">
                                         <button @click="open = !open" class="inline-flex items-center text-gray-700 hover:text-gray-900">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -171,7 +171,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="5" class="px-4 py-6 text-center text-gray-500">
+                                <td colspan="5" class="px-4 py-6 text-center text-gray-500 text-sm">
                                     No se encontraron vulnerabilidades.
                                 </td>
                             </tr>

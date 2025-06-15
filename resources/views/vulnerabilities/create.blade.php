@@ -16,18 +16,18 @@
                     </div>
                     @endif
                     <div>
-                        <label for="title" class="block font-medium text-gray-700 mb-1">Nombre</label>
+                        <label for="title" class="block font-medium text-gray-700 mb-1 text-sm">Nombre</label>
                         <input type="text" name="title" id="title" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" value="{{ old('title') }}" required>
                         @error('title') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <label for="detection_date" class="block font-medium text-gray-700 mb-1">Fecha de detección</label>
+                        <label for="detection_date" class="block font-medium text-gray-700 mb-1 text-sm">Fecha de detección</label>
                         <input type="date" name="detection_date" id="detection_date" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" value="{{ old('detection_date') }}">
                         @error('detection_date') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     {{-- El campo para vulnerability_type_id ha sido eliminado. El campo type_id más abajo se conservará y será el único para Tipo de Vulnerabilidad --}}
                     <div class="col-span-3">
-                        <label for="description" class="block font-medium text-gray-700 mb-1">Descripción detallada</label>
+                        <label for="description" class="block font-medium text-gray-700 mb-1 text-sm">Descripción detallada</label>
                         <textarea name="description" id="description" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" rows="3">{{ old('description') }}</textarea>
                         @error('description') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
@@ -58,7 +58,7 @@
                         class="col-span-1 sm:col-span-2 md:col-span-3" />
                     @endif
                     <div>
-                        <label for="component" class="block font-medium text-gray-700 mb-1">Componente o módulo afectado</label>
+                        <label for="component" class="block font-medium text-gray-700 mb-1 text-sm">Componente o módulo afectado</label>
                         <input type="text" name="component" id="component" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" value="{{ old('component') }}">
                         @error('component') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
@@ -68,22 +68,22 @@
 
 
                     <div>
-                        <label for="owasp_classification" class="block font-medium text-gray-700 mb-1">Clasificación OWASP</label>
+                        <label for="owasp_classification" class="block font-medium text-gray-700 mb-1 text-sm">Clasificación OWASP</label>
                         <input type="text" name="owasp_classification" id="owasp_classification" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" value="{{ old('owasp_classification') }}">
                         @error('owasp_classification') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <label for="cvss_vector" class="block font-medium text-gray-700 mb-1">Vector CVSS</label>
+                        <label for="cvss_vector" class="block font-medium text-gray-700 mb-1 text-sm">Vector CVSS</label>
                         <input type="text" name="cvss_vector" id="cvss_vector" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" value="{{ old('cvss_vector') }}">
                         @error('cvss_vector') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <label for="cvss_score" class="block font-medium text-gray-700 mb-1">Puntaje CVSS</label>
+                        <label for="cvss_score" class="block font-medium text-gray-700 mb-1 text-sm">Puntaje CVSS</label>
                         <input type="number" step="0.1" name="cvss_score" id="cvss_score" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" value="{{ old('cvss_score') }}">
                         @error('cvss_score') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <label for="severity" class="block font-medium text-gray-700 mb-1">Nivel de severidad</label>
+                        <label for="severity" class="block font-medium text-gray-700 mb-1 text-sm">Nivel de severidad</label>
                         <select name="severity" id="severity" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200">
                             <option value="">Seleccione</option>
                             <option value="Baja" {{ old('severity') == 'Baja' ? 'selected' : '' }}>Baja</option>
@@ -94,14 +94,14 @@
                         @error('severity') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <label for="likelihood" class="block font-medium text-gray-700 mb-1">Probabilidad de explotación</label>
+                        <label for="likelihood" class="block font-medium text-gray-700 mb-1 text-sm">Probabilidad de explotación</label>
                         <input type="number" step="0.01" name="likelihood" id="likelihood"
                             class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200"
                             value="{{ old('likelihood') }}">
                         @error('likelihood') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <label for="impact" class="block font-medium text-gray-700 mb-1">Impacto estimado</label>
+                        <label for="impact" class="block font-medium text-gray-700 mb-1 text-sm">Impacto estimado</label>
                         <select name="impact" id="impact" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" required>
                             <option value="">Seleccione</option>
                             <option value="Alto" {{ old('impact') == 'Alto' ? 'selected' : '' }}>Alto</option>
@@ -111,7 +111,7 @@
                     </div>
                     @if($viewModel->categories && $viewModel->categories->count())
                     <div>
-                        <label for="category_id" class="block font-medium text-gray-700 mb-1">Categoría de Vulnerabilidad</label>
+                        <label for="category_id" class="block font-medium text-gray-700 mb-1 text-sm">Categoría de Vulnerabilidad</label>
                         <select name="category_id" id="category_id" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" required>
                             <option value="">Seleccione una categoría...</option>
                             @foreach($viewModel->categories as $cat)
@@ -125,7 +125,7 @@
                     @endif
                     @if($viewModel->types && $viewModel->types->count())
                     <div>
-                        <label for="type_id" class="block font-medium text-gray-700 mb-1">Tipo de vulnerabilidad</label>
+                        <label for="type_id" class="block font-medium text-gray-700 mb-1 text-sm">Tipo de vulnerabilidad</label>
                         <select name="type_id" id="type_id" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" required>
                             <option value="">Seleccione un tipo...</option>
                             @foreach($viewModel->types as $type)
@@ -138,12 +138,12 @@
                     </div>
                     @endif
                     <div>
-                        <label for="due_date" class="block font-medium text-gray-700 mb-1">Fecha límite o estimada de resolución</label>
+                        <label for="due_date" class="block font-medium text-gray-700 mb-1 text-sm">Fecha límite o estimada de resolución</label>
                         <input type="date" name="due_date" id="due_date" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" value="{{ old('due_date') }}">
                         @error('due_date') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <label for="priority" class="block font-medium text-gray-700 mb-1">Prioridad</label>
+                        <label for="priority" class="block font-medium text-gray-700 mb-1 text-sm">Prioridad</label>
                         <select name="priority" id="priority" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200">
                             <option value="">Seleccione</option>
                             <option value="Baja" {{ old('priority') == 'Baja' ? 'selected' : '' }}>Baja</option>
@@ -154,23 +154,23 @@
                         @error('priority') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <label for="source" class="block font-medium text-gray-700 mb-1">Fuente de detección</label>
+                        <label for="source" class="block font-medium text-gray-700 mb-1 text-sm">Fuente de detección</label>
                         <input type="text" name="source" id="source" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" value="{{ old('source') }}">
                         @error('source') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div class="col-span-2">
-                        <label for="documentation_url" class="block font-medium text-gray-700 mb-1">Enlace a documentación relacionada (URL carpeta compartida)</label>
+                        <label for="documentation_url" class="block font-medium text-gray-700 mb-1 text-sm">Enlace a documentación relacionada (URL carpeta compartida)</label>
                         <input type="url" name="documentation_url" id="documentation_url" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" value="{{ old('documentation_url') }}">
                         @error('documentation_url') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div class="col-span-3">
-                        <label for="attachments" class="block font-medium text-gray-700 mb-1">Archivos adjuntos (opcional)</label>
+                        <label for="attachments" class="block font-medium text-gray-700 mb-1 text-sm">Archivos adjuntos (opcional)</label>
                         <input type="file" name="attachments[]" id="attachments" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" multiple>
                         @error('attachments') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     {{-- El siguiente div que contiene type_id se mantiene, el de vulnerability_type_id se elimina --}}
                     <div class="col-span-3">
-                        <label for="observations" class="block font-medium text-gray-700 mb-1">Observaciones y consideraciones</label>
+                        <label for="observations" class="block font-medium text-gray-700 mb-1 text-sm">Observaciones y consideraciones</label>
                         <textarea name="observations" id="observations" class="w-full border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200" rows="2">{{ old('observations') }}</textarea>
                         @error('observations') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>

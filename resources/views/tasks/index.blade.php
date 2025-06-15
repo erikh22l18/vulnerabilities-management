@@ -49,8 +49,8 @@
                         <tbody class="text-gray-700">
                             @forelse ($viewModel->tasks as $task)
                                 <tr class="border-b hover:bg-gray-50 transition">
-                                    <td class="px-4 py-3">{{ $task->title }}</td>
-                                    <td class="px-4 py-3 hidden lg:table-cell">
+                                    <td class="px-4 py-3 text-sm">{{ $task->title }}</td>
+                                    <td class="px-4 py-3 hidden lg:table-cell text-sm">
                                         @if($task->vulnerability)
                                             <a href="{{ route('vulnerabilities.show', $task->vulnerability_id) }}" class="text-blue-600 hover:underline">
                                                 {{ Str::limit($task->vulnerability->title, 30) }}
@@ -59,7 +59,7 @@
                                             N/A
                                         @endif
                                     </td>
-                                    <td class="px-4 py-3 hidden md:table-cell">
+                                    <td class="px-4 py-3 hidden md:table-cell text-sm">
                                         @if($task->project)
                                             <a href="{{ route('projects.show', $task->project_id) }}" class="text-blue-600 hover:underline">
                                                 {{ Str::limit($task->project->name, 30) }}
@@ -68,7 +68,7 @@
                                             N/A
                                         @endif
                                     </td>
-                                    <td class="px-4 py-3 hidden md:table-cell">
+                                    <td class="px-4 py-3 hidden md:table-cell text-sm">
                                         @if($task->assignee)
                                             <div class="flex items-center">
                                                 <img class="h-6 w-6 rounded-full object-cover mr-2"
@@ -80,7 +80,7 @@
                                             <span class="text-gray-400">Sin asignar</span>
                                         @endif
                                     </td>
-                                    <td class="px-4 py-3">
+                                    <td class="px-4 py-3 text-sm">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                                             @switch(strtolower($task->status))
                                                 @case('completada') bg-green-100 text-green-800 @break
@@ -91,7 +91,7 @@
                                             {{ ucfirst($task->status) }}
                                         </span>
                                     </td>
-                                    <td class="px-4 py-3">
+                                    <td class="px-4 py-3 text-sm">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                                             @switch(strtolower($task->priority))
                                                 @case('crítica') bg-red-100 text-red-800 @break
@@ -103,7 +103,7 @@
                                             {{ ucfirst($task->priority) }}
                                         </span>
                                     </td>
-                                    <td class="px-4 py-3 hidden sm:table-cell">
+                                    <td class="px-4 py-3 hidden sm:table-cell text-sm">
                                         @if($task->due_date)
                                             <span class="text-sm {{ $task->due_date->isPast() && $task->status !== 'Completada' ? 'text-red-600 font-semibold' : 'text-gray-600' }}">
                                                 {{ $task->due_date->format('d/m/Y') }}
@@ -112,7 +112,7 @@
                                             <span class="text-gray-400">-</span>
                                         @endif
                                     </td>
-                                    <td class="px-4 py-3 text-sm">
+                                    <td class="px-4 py-3 text-sm text-sm">
                                         <div class="flex items-center space-x-3">
                                             <a href="{{ route('tasks.show', $task) }}" class="text-blue-600 hover:text-blue-900">Ver</a>
                                             @can('update', $task)
@@ -130,7 +130,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="px-4 py-6 text-center text-gray-500">
+                                    <td colspan="8" class="px-4 py-6 text-center text-gray-500 text-sm">
                                         No hay tareas disponibles.
                                     </td>
                                 </tr>

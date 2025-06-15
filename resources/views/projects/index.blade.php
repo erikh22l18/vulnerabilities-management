@@ -38,40 +38,40 @@
                     <table class="w-full bg-white shadow rounded">
                         <thead>
                             <tr class="bg-blue-100 text-left">
-                                <th class="px-4 py-2">Identificador</th>
-                                <th class="px-4 py-2">Nombre</th>
+                                <th class="px-4 py-2 text-sm">Identificador</th>
+                                <th class="px-4 py-2 text-sm">Nombre</th>
                                 @if(!$viewModel->context || $viewModel->context !== 'organization')
-                                    <th class="px-4 py-2 hidden md:table-cell">Organización</th>
+                                    <th class="px-4 py-2 hidden md:table-cell text-sm">Organización</th>
                                 @endif
-                                <th class="px-4 py-2 hidden md:table-cell">Estado</th>
-                                <th class="px-4 py-2 hidden sm:table-cell">Usuarios</th>
-                                <th class="px-4 py-2 hidden sm:table-cell">Vulnerabilidades</th>
-                                <th class="px-4 py-2">Acciones</th>
+                                <th class="px-4 py-2 hidden md:table-cell text-sm">Estado</th>
+                                <th class="px-4 py-2 hidden sm:table-cell text-sm">Usuarios</th>
+                                <th class="px-4 py-2 hidden sm:table-cell text-sm">Vulnerabilidades</th>
+                                <th class="px-4 py-2 text-sm">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($viewModel->projects as $project)
                                 <tr class="border-b hover:bg-blue-50 transition">
-                                    <td class="px-4 py-2">{{ $project->identifier }}</td>
-                                    <td class="px-4 py-2">{{ $project->name }}</td>
+                                    <td class="px-4 py-2 text-sm">{{ $project->identifier }}</td>
+                                    <td class="px-4 py-2 text-sm">{{ $project->name }}</td>
                                     @if(!$viewModel->context || $viewModel->context !== 'organization')
-                                        <td class="px-4 py-2 hidden md:table-cell">{{ $project->organization->name }}</td>
+                                        <td class="px-4 py-2 hidden md:table-cell text-sm">{{ $project->organization->name }}</td>
                                     @endif
-                                    <td class="px-4 py-2 hidden md:table-cell">
+                                    <td class="px-4 py-2 hidden md:table-cell text-sm">
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
                                             {{ strtolower($project->status) === 'active' ? 'bg-green-100 text-green-800' : (strtolower($project->status) === 'activo' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800') }}">
                                             {{ ucfirst($project->status) }}
                                         </span>
                                     </td>
-                                    <td class="px-4 py-2 hidden sm:table-cell">
+                                    <td class="px-4 py-2 hidden sm:table-cell text-sm">
                                         <x-user-avatars :users="$project->users" />
                                     </td>
-                                    <td class="px-4 py-2 hidden sm:table-cell">
+                                    <td class="px-4 py-2 hidden sm:table-cell text-sm">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                             {{ $project->vulnerabilities_count }}
                                         </span>
                                     </td>
-                                    <td class="px-4 py-2">
+                                    <td class="px-4 py-2 text-sm">
                                         <div class="relative" x-data="{ open: false }">
                                             <button @click="open = !open" class="text-gray-400 hover:text-gray-600">
                                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -127,7 +127,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="px-4 py-6 text-center text-gray-500">
+                                    <td colspan="7" class="px-4 py-6 text-center text-gray-500 text-sm">
                                         No se encontraron proyectos.
                                     </td>
                                 </tr>

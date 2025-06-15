@@ -22,27 +22,27 @@
                     <table class="w-full bg-white shadow rounded">
                         <thead>
                             <tr class="bg-blue-100 text-left">
-                                <th class="px-4 py-2">Nombre</th>
-                                <th class="px-4 py-2 hidden lg:table-cell">Dirección</th>
-                                <th class="px-4 py-2 hidden md:table-cell">Usuarios</th>
-                                <th class="px-4 py-2 hidden sm:table-cell">Proyectos</th>
-                                <th class="px-4 py-2">Acciones</th>
+                                <th class="px-4 py-2 text-sm">Nombre</th>
+                                <th class="px-4 py-2 hidden lg:table-cell text-sm">Dirección</th>
+                                <th class="px-4 py-2 hidden md:table-cell text-sm">Usuarios</th>
+                                <th class="px-4 py-2 hidden sm:table-cell text-sm">Proyectos</th>
+                                <th class="px-4 py-2 text-sm">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($organizations as $org)
                             <tr class="border-b hover:bg-blue-50 transition">
-                                <td class="px-4 py-2 font-medium text-gray-700">{{ $org->name }}</td>
-                                <td class="px-4 py-2 text-gray-600 hidden lg:table-cell">{{ $org->location ?? '-' }}</td>
-                                <td class="px-4 py-2 hidden md:table-cell">
+                                <td class="px-4 py-2 font-medium text-gray-700 text-sm">{{ $org->name }}</td>
+                                <td class="px-4 py-2 text-gray-600 hidden lg:table-cell text-sm">{{ $org->location ?? '-' }}</td>
+                                <td class="px-4 py-2 hidden md:table-cell text-sm">
                                     <x-user-avatars :users="$org->users" />
                                 </td>
-                                <td class="px-4 py-2 hidden sm:table-cell">
+                                <td class="px-4 py-2 hidden sm:table-cell text-sm">
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                         {{ $org->projects_count }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-2">
+                                <td class="px-4 py-2 text-sm">
                                     <div class="relative" x-data="{ open: false }">
                                         <button @click="open = !open" class="inline-flex items-center text-gray-700 hover:text-gray-900">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -107,7 +107,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="5" class="px-4 py-6 text-center text-gray-400">
+                                <td colspan="5" class="px-4 py-6 text-center text-gray-400 text-sm">
                                     No hay organizaciones registradas.
                                 </td>
                             </tr>

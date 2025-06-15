@@ -5,8 +5,10 @@
                 <div class="flex items-center justify-between mb-6">
                     <h1 class="text-2xl font-semibold text-gray-800">Organizaciones</h1>
                     <a href="{{ route('organizations.create') }}" 
-                       class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 transition">
-                        + Nueva Organización
+                       class="bg-blue-600 text-white p-2 md:px-4 md:py-2 rounded shadow hover:bg-blue-700 transition inline-flex items-center"
+                       aria-label="Nueva Organización">
+                        <svg class="w-5 h-5 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        <span class="hidden md:inline">+ Nueva Organización</span>
                     </a>
                 </div>
                 <div class="overflow-x-auto min-h-[400px]">

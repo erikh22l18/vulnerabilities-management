@@ -14,11 +14,12 @@
                     <div class="flex gap-2">
                         @if($viewModel->can_create)
                             <a href="{{ $viewModel->createRoute }}" 
-                               class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 transition inline-flex items-center">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                               class="bg-blue-600 text-white p-2 md:px-4 md:py-2 rounded shadow hover:bg-blue-700 transition inline-flex items-center"
+                               aria-label="Nuevo Proyecto">
+                                <svg class="w-5 h-5 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                 </svg>
-                                Nuevo Proyecto
+                                <span class="hidden md:inline">Nuevo Proyecto</span>
                             </a>
                         @endif
                     </div>

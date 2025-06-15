@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="py-8 bg-gradient-to-br from-blue-50 via-white to-blue-100 min-h-screen">
-        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-8">
                 <div class="flex items-center justify-between mb-6">
                     <div>
@@ -24,16 +24,24 @@
                 </div>
 
                 <div class="overflow-x-auto min-h-[400px]">
+                    <!--
+                        Table columns responsive design:
+                        - 'Título', 'Estado', 'Prioridad', 'Acciones' are always visible.
+                        - 'Vulnerabilidad' is hidden on screens smaller than 'lg'.
+                        - 'Proyecto' is hidden on screens smaller than 'md'.
+                        - 'Asignado A' is hidden on screens smaller than 'md'.
+                        - 'Fecha Límite' is hidden on screens smaller than 'sm'.
+                    -->
                     <table class="w-full bg-white shadow rounded">
                         <thead>
                             <tr class="bg-gray-100 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">
                                 <th class="px-4 py-3">Título</th>
-                                <th class="px-4 py-3">Vulnerabilidad</th>
-                                <th class="px-4 py-3">Proyecto</th>
-                                <th class="px-4 py-3">Asignado A</th>
+                                <th class="px-4 py-3 hidden lg:table-cell">Vulnerabilidad</th>
+                                <th class="px-4 py-3 hidden md:table-cell">Proyecto</th>
+                                <th class="px-4 py-3 hidden md:table-cell">Asignado A</th>
                                 <th class="px-4 py-3">Estado</th>
                                 <th class="px-4 py-3">Prioridad</th>
-                                <th class="px-4 py-3">Fecha Límite</th>
+                                <th class="px-4 py-3 hidden sm:table-cell">Fecha Límite</th>
                                 <th class="px-4 py-3">Acciones</th>
                             </tr>
                         </thead>
@@ -41,7 +49,7 @@
                             @forelse ($viewModel->tasks as $task)
                                 <tr class="border-b hover:bg-gray-50 transition">
                                     <td class="px-4 py-3">{{ $task->title }}</td>
-                                    <td class="px-4 py-3">
+                                    <td class="px-4 py-3 hidden lg:table-cell">
                                         @if($task->vulnerability)
                                             <a href="{{ route('vulnerabilities.show', $task->vulnerability_id) }}" class="text-blue-600 hover:underline">
                                                 {{ Str::limit($task->vulnerability->title, 30) }}
@@ -50,7 +58,7 @@
                                             N/A
                                         @endif
                                     </td>
-                                    <td class="px-4 py-3">
+                                    <td class="px-4 py-3 hidden md:table-cell">
                                         @if($task->project)
                                             <a href="{{ route('projects.show', $task->project_id) }}" class="text-blue-600 hover:underline">
                                                 {{ Str::limit($task->project->name, 30) }}
@@ -59,7 +67,7 @@
                                             N/A
                                         @endif
                                     </td>
-                                    <td class="px-4 py-3">
+                                    <td class="px-4 py-3 hidden md:table-cell">
                                         @if($task->assignee)
                                             <div class="flex items-center">
                                                 <img class="h-6 w-6 rounded-full object-cover mr-2"
@@ -94,7 +102,7 @@
                                             {{ ucfirst($task->priority) }}
                                         </span>
                                     </td>
-                                    <td class="px-4 py-3">
+                                    <td class="px-4 py-3 hidden sm:table-cell">
                                         @if($task->due_date)
                                             <span class="text-sm {{ $task->due_date->isPast() && $task->status !== 'Completada' ? 'text-red-600 font-semibold' : 'text-gray-600' }}">
                                                 {{ $task->due_date->format('d/m/Y') }}

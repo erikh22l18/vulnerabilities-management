@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="py-8 bg-gradient-to-br from-blue-50 via-white to-blue-100 min-h-screen">
-        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-8">
                 <div class="flex items-center justify-between mb-6">
                     <div>
@@ -41,17 +41,24 @@
                 </div>
 
                 <div class="overflow-x-auto min-h-[400px]">
+                    <!--
+                        Table columns responsive design:
+                        - 'Título', 'Estado', 'Acciones' are always visible.
+                        - 'Proyecto' is hidden on screens smaller than 'md' (if visible).
+                        - 'Prioridad' is hidden on screens smaller than 'sm'.
+                        - 'Usuarios' is hidden on screens smaller than 'sm' (if visible).
+                    -->
                     <table class="w-full bg-white shadow rounded">
                         <thead>
                             <tr class="bg-blue-100 text-left">
                                 <th class="px-4 py-2">Título</th>
                                 @if(!$viewModel->context || $viewModel->context !== 'project')
-                                <th class="px-4 py-2">Proyecto</th>
+                                <th class="px-4 py-2 hidden md:table-cell">Proyecto</th>
                                 @endif
                                 <th class="px-4 py-2">Estado</th>
-                                <th class="px-4 py-2">Prioridad</th>
+                                <th class="px-4 py-2 hidden sm:table-cell">Prioridad</th>
                                 @if(!$viewModel->context || $viewModel->context !== 'user')
-                                <th class="px-4 py-2">Usuarios</th>
+                                <th class="px-4 py-2 hidden sm:table-cell">Usuarios</th>
                                 @endif
                                 <th class="px-4 py-2">Acciones</th>
                             </tr>
@@ -61,12 +68,12 @@
                             <tr class="border-b hover:bg-blue-50 transition">
                                 <td class="px-4 py-2">{{ $vulnerability->title }}</td>
                                 @if(!$viewModel->context || $viewModel->context !== 'project')
-                                <td class="px-4 py-2">{{ $vulnerability->project->name }}</td>
+                                <td class="px-4 py-2 hidden md:table-cell">{{ $vulnerability->project->name }}</td>
                                 @endif
                                 <td class="px-4 py-2">
                                     <x-vulnerability-status :status="$vulnerability->state" />
                                 </td>
-                                <td class="px-4 py-2">
+                                <td class="px-4 py-2 hidden sm:table-cell">
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                                             @switch($vulnerability->priority)
                                                 @case('Alta') bg-red-100 text-red-800 @break
@@ -77,7 +84,7 @@
                                     </span>
                                 </td>
                                 @if(!$viewModel->context || $viewModel->context !== 'user')
-                                <td class="px-4 py-2">
+                                <td class="px-4 py-2 hidden sm:table-cell">
                                     <x-user-avatars :users="$vulnerability->assignedUsers" />
                                 </td>
                                 @endif

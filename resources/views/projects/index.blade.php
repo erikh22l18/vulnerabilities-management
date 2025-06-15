@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="py-8 bg-gradient-to-br from-blue-50 via-white to-blue-100 min-h-screen">
-        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-8">
                 {{-- Header Section --}}
                 <div class="flex items-center justify-between mb-6">
@@ -26,17 +26,25 @@
 
                 {{-- Table Section --}}
                 <div class="overflow-x-auto min-h-[400px]">
+                    <!--
+                        Table columns responsive design:
+                        - 'Identificador', 'Nombre', 'Acciones' are always visible.
+                        - 'Organización' is hidden on screens smaller than 'md'.
+                        - 'Estado' is hidden on screens smaller than 'md'.
+                        - 'Usuarios' is hidden on screens smaller than 'sm'.
+                        - 'Vulnerabilidades' is hidden on screens smaller than 'sm'.
+                    -->
                     <table class="w-full bg-white shadow rounded">
                         <thead>
                             <tr class="bg-blue-100 text-left">
                                 <th class="px-4 py-2">Identificador</th>
                                 <th class="px-4 py-2">Nombre</th>
                                 @if(!$viewModel->context || $viewModel->context !== 'organization')
-                                    <th class="px-4 py-2">Organización</th>
+                                    <th class="px-4 py-2 hidden md:table-cell">Organización</th>
                                 @endif
-                                <th class="px-4 py-2">Estado</th>
-                                <th class="px-4 py-2">Usuarios</th>
-                                <th class="px-4 py-2">Vulnerabilidades</th>
+                                <th class="px-4 py-2 hidden md:table-cell">Estado</th>
+                                <th class="px-4 py-2 hidden sm:table-cell">Usuarios</th>
+                                <th class="px-4 py-2 hidden sm:table-cell">Vulnerabilidades</th>
                                 <th class="px-4 py-2">Acciones</th>
                             </tr>
                         </thead>
@@ -46,18 +54,18 @@
                                     <td class="px-4 py-2">{{ $project->identifier }}</td>
                                     <td class="px-4 py-2">{{ $project->name }}</td>
                                     @if(!$viewModel->context || $viewModel->context !== 'organization')
-                                        <td class="px-4 py-2">{{ $project->organization->name }}</td>
+                                        <td class="px-4 py-2 hidden md:table-cell">{{ $project->organization->name }}</td>
                                     @endif
-                                    <td class="px-4 py-2">
+                                    <td class="px-4 py-2 hidden md:table-cell">
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
                                             {{ strtolower($project->status) === 'active' ? 'bg-green-100 text-green-800' : (strtolower($project->status) === 'activo' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800') }}">
                                             {{ ucfirst($project->status) }}
                                         </span>
                                     </td>
-                                    <td class="px-4 py-2">
+                                    <td class="px-4 py-2 hidden sm:table-cell">
                                         <x-user-avatars :users="$project->users" />
                                     </td>
-                                    <td class="px-4 py-2">
+                                    <td class="px-4 py-2 hidden sm:table-cell">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                             {{ $project->vulnerabilities_count }}
                                         </span>

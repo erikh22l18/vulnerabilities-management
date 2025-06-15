@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="py-8 bg-gradient-to-br from-blue-50 via-white to-blue-100 min-h-screen">
-        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-8">
                 <div class="flex items-center justify-between mb-6">
                     <h1 class="text-2xl font-semibold text-gray-800">Organizaciones</h1>
@@ -10,13 +10,20 @@
                     </a>
                 </div>
                 <div class="overflow-x-auto min-h-[400px]">
+                    <!--
+                        Table columns responsive design:
+                        - 'Nombre' and 'Acciones' are always visible.
+                        - 'Dirección' is hidden on screens smaller than 'lg'.
+                        - 'Usuarios' is hidden on screens smaller than 'md'.
+                        - 'Proyectos' is hidden on screens smaller than 'sm'.
+                    -->
                     <table class="w-full bg-white shadow rounded">
                         <thead>
                             <tr class="bg-blue-100 text-left">
                                 <th class="px-4 py-2">Nombre</th>
-                                <th class="px-4 py-2">Dirección</th>
-                                <th class="px-4 py-2">Usuarios</th>
-                                <th class="px-4 py-2">Proyectos</th>
+                                <th class="px-4 py-2 hidden lg:table-cell">Dirección</th>
+                                <th class="px-4 py-2 hidden md:table-cell">Usuarios</th>
+                                <th class="px-4 py-2 hidden sm:table-cell">Proyectos</th>
                                 <th class="px-4 py-2">Acciones</th>
                             </tr>
                         </thead>
@@ -24,11 +31,11 @@
                             @forelse ($organizations as $org)
                             <tr class="border-b hover:bg-blue-50 transition">
                                 <td class="px-4 py-2 font-medium text-gray-700">{{ $org->name }}</td>
-                                <td class="px-4 py-2 text-gray-600">{{ $org->location ?? '-' }}</td>
-                                <td class="px-4 py-2">
+                                <td class="px-4 py-2 text-gray-600 hidden lg:table-cell">{{ $org->location ?? '-' }}</td>
+                                <td class="px-4 py-2 hidden md:table-cell">
                                     <x-user-avatars :users="$org->users" />
                                 </td>
-                                <td class="px-4 py-2">
+                                <td class="px-4 py-2 hidden sm:table-cell">
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                         {{ $org->projects_count }}
                                     </span>

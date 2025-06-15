@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="py-8 bg-gradient-to-br from-blue-50 via-white to-blue-100 min-h-screen">
-        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-8">
                 <div class="flex items-center justify-between mb-6">
                     <div>
@@ -12,61 +12,68 @@
                     <div class="flex gap-2">
                         @if(isset($viewModel->project) && $viewModel->context === 'project')
                             @can('crearVulnerabilidades', $viewModel->project)
-                            <a href="{{ $viewModel->createRoute }}" class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 transition inline-flex items-center">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <a href="{{ $viewModel->createRoute }}" class="bg-blue-600 text-white p-2 md:px-4 md:py-2 rounded shadow hover:bg-blue-700 transition inline-flex items-center" aria-label="Nueva Vulnerabilidad">
+                                <svg class="w-5 h-5 md:mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                                 </svg>
-                                Nueva Vulnerabilidad
+                                <span class="hidden md:inline">Nueva Vulnerabilidad</span>
                             </a>
                             @endcan
                         @else
                             @can('create', App\Domain\Vulnerabilities\Models\Vulnerability::class)
-                            <a href="{{ $viewModel->createRoute }}" class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 transition inline-flex items-center">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <a href="{{ $viewModel->createRoute }}" class="bg-blue-600 text-white p-2 md:px-4 md:py-2 rounded shadow hover:bg-blue-700 transition inline-flex items-center" aria-label="Nueva Vulnerabilidad">
+                                <svg class="w-5 h-5 md:mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                                 </svg>
-                                Nueva Vulnerabilidad
+                                <span class="hidden md:inline">Nueva Vulnerabilidad</span>
                             </a>
                             @endcan
                         @endif
                         @if($viewModel->can_import)
-                        <a href="{{ route('vulnerabilities.charge') }}" class="bg-green-600 text-white px-4 py-2 rounded shadow hover:bg-green-700 transition inline-flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <a href="{{ route('vulnerabilities.charge') }}" class="bg-green-600 text-white p-2 md:px-4 md:py-2 rounded shadow hover:bg-green-700 transition inline-flex items-center" aria-label="Importar Excel">
+                            <svg class="w-5 h-5 md:mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
                             </svg>
-                            Importar Excel
+                            <span class="hidden md:inline">Importar Excel</span>
                         </a>
                         @endif
                     </div>
                 </div>
 
                 <div class="overflow-x-auto min-h-[400px]">
+                    <!--
+                        Table columns responsive design:
+                        - 'Título', 'Estado', 'Acciones' are always visible.
+                        - 'Proyecto' is hidden on screens smaller than 'md' (if visible).
+                        - 'Prioridad' is hidden on screens smaller than 'sm'.
+                        - 'Usuarios' is hidden on screens smaller than 'sm' (if visible).
+                    -->
                     <table class="w-full bg-white shadow rounded">
                         <thead>
                             <tr class="bg-blue-100 text-left">
-                                <th class="px-4 py-2">Título</th>
+                                <th class="px-4 py-2 text-sm">Título</th>
                                 @if(!$viewModel->context || $viewModel->context !== 'project')
-                                <th class="px-4 py-2">Proyecto</th>
+                                <th class="px-4 py-2 hidden md:table-cell text-sm">Proyecto</th>
                                 @endif
-                                <th class="px-4 py-2">Estado</th>
-                                <th class="px-4 py-2">Prioridad</th>
+                                <th class="px-4 py-2 text-sm">Estado</th>
+                                <th class="px-4 py-2 hidden sm:table-cell text-sm">Prioridad</th>
                                 @if(!$viewModel->context || $viewModel->context !== 'user')
-                                <th class="px-4 py-2">Usuarios</th>
+                                <th class="px-4 py-2 hidden sm:table-cell text-sm">Usuarios</th>
                                 @endif
-                                <th class="px-4 py-2">Acciones</th>
+                                <th class="px-4 py-2 text-sm"><span class="sr-only">Acciones</span></th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($viewModel->vulnerabilities as $vulnerability)
                             <tr class="border-b hover:bg-blue-50 transition">
-                                <td class="px-4 py-2">{{ $vulnerability->title }}</td>
+                                <td class="px-4 py-2 text-sm">{{ $vulnerability->title }}</td>
                                 @if(!$viewModel->context || $viewModel->context !== 'project')
-                                <td class="px-4 py-2">{{ $vulnerability->project->name }}</td>
+                                <td class="px-4 py-2 hidden md:table-cell text-sm">{{ $vulnerability->project->name }}</td>
                                 @endif
-                                <td class="px-4 py-2">
+                                <td class="px-4 py-2 text-sm">
                                     <x-vulnerability-status :status="$vulnerability->state" />
                                 </td>
-                                <td class="px-4 py-2">
+                                <td class="px-4 py-2 hidden sm:table-cell text-sm">
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                                             @switch($vulnerability->priority)
                                                 @case('Alta') bg-red-100 text-red-800 @break
@@ -77,11 +84,11 @@
                                     </span>
                                 </td>
                                 @if(!$viewModel->context || $viewModel->context !== 'user')
-                                <td class="px-4 py-2">
+                                <td class="px-4 py-2 hidden sm:table-cell text-sm">
                                     <x-user-avatars :users="$vulnerability->assignedUsers" />
                                 </td>
                                 @endif
-                                <td class="px-4 py-2">
+                                <td class="px-4 py-2 text-sm">
                                     <div class="relative" x-data="{ open: false }">
                                         <button @click="open = !open" class="inline-flex items-center text-gray-700 hover:text-gray-900">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -164,7 +171,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="5" class="px-4 py-6 text-center text-gray-500">
+                                <td colspan="5" class="px-4 py-6 text-center text-gray-500 text-sm">
                                     No se encontraron vulnerabilidades.
                                 </td>
                             </tr>

@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6 md:p-8">
                 <x-validation-errors class="mb-4" />
 
@@ -15,19 +15,19 @@
 
                     <!-- Title -->
                     <div class="mb-4">
-                        <x-label for="title" value="Título de la Tarea" />
+                        <x-label for="title" value="Título de la Tarea" class="text-sm" />
                         <x-input id="title" class="block mt-1 w-full" type="text" name="title" :value="old('title')" required autofocus />
                     </div>
 
                     <!-- Description -->
                     <div class="mb-4">
-                        <x-label for="description" value="Descripción" />
+                        <x-label for="description" value="Descripción" class="text-sm" />
                         <textarea id="description" name="description" rows="4" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('description') }}</textarea>
                     </div>
 
                     <!-- Vulnerability -->
                     <div class="mb-4">
-                        <x-label for="vulnerability_id" value="Vulnerabilidad Asociada" />
+                        <x-label for="vulnerability_id" value="Vulnerabilidad Asociada" class="text-sm" />
                         <select id="vulnerability_id" name="vulnerability_id" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
                             <option value="">Seleccione una vulnerabilidad</option>
                             @foreach ($vulnerabilities as $vulnerability)
@@ -40,7 +40,7 @@
                     
                     <!-- Project (auto-filled by JS, or manual if no JS / no vulnerability selected) -->
                     <div class="mb-4">
-                        <x-label for="project_id" value="Proyecto Asociado" />
+                        <x-label for="project_id" value="Proyecto Asociado" class="text-sm" />
                         <select id="project_id" name="project_id" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
                             <option value="">Seleccione un proyecto</option>
                             @foreach ($projects as $project)
@@ -55,7 +55,7 @@
 
                     <!-- Assigned To -->
                     <div class="mb-4">
-                        <x-label for="assigned_to" value="Asignar A (Usuario)" />
+                        <x-label for="assigned_to" value="Asignar A (Usuario)" class="text-sm" />
                         <select id="assigned_to" name="assigned_to" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                             <option value="">Sin asignar</option>
                             @foreach ($users as $user)
@@ -68,13 +68,13 @@
 
                     <!-- Due Date -->
                     <div class="mb-4">
-                        <x-label for="due_date" value="Fecha Límite" />
+                        <x-label for="due_date" value="Fecha Límite" class="text-sm" />
                         <x-input id="due_date" class="block mt-1 w-full" type="date" name="due_date" :value="old('due_date')" />
                     </div>
 
                     <!-- Priority -->
                     <div class="mb-4">
-                        <x-label for="priority" value="Prioridad" />
+                        <x-label for="priority" value="Prioridad" class="text-sm" />
                         <select id="priority" name="priority" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
                             <option value="baja" {{ old('priority') == 'baja' ? 'selected' : '' }}>Baja</option>
                             <option value="media" {{ old('priority', 'media') == 'media' ? 'selected' : '' }}>Media</option>
@@ -85,7 +85,7 @@
 
                     <!-- Status -->
                     <div class="mb-4">
-                        <x-label for="status" value="Estado" />
+                        <x-label for="status" value="Estado" class="text-sm" />
                         <select id="status" name="status" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
                             <option value="pendiente" {{ old('status', 'pendiente') == 'pendiente' ? 'selected' : '' }}>Pendiente</option>
                             <option value="en_progreso" {{ old('status') == 'en_progreso' ? 'selected' : '' }}>En Progreso</option>
@@ -94,11 +94,11 @@
                         </select>
                     </div>
 
-                    <div class="flex items-center justify-end mt-6">
-                        <a href="{{ url()->previous(route('tasks.index')) }}" class="text-sm text-gray-600 hover:text-gray-900 mr-4">
+                    <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-6">
+                        <a href="{{ url()->previous(route('tasks.index')) }}" class="w-full sm:w-auto text-center text-sm text-gray-600 hover:text-gray-900 mr-4">
                             Cancelar
                         </a>
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-md focus:outline-none focus:shadow-outline">
+                        <button type="submit" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-md focus:outline-none focus:shadow-outline">
                             Crear Tarea
                         </button>
                     </div>

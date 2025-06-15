@@ -1,39 +1,48 @@
 <x-app-layout>
     <div class="py-8 bg-gradient-to-br from-blue-50 via-white to-blue-100 min-h-screen">
-        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-8">
                 <div class="flex items-center justify-between mb-6">
                     <h1 class="text-2xl font-semibold text-gray-800">Organizaciones</h1>
                     <a href="{{ route('organizations.create') }}" 
-                       class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 transition">
-                        + Nueva Organización
+                       class="bg-blue-600 text-white p-2 md:px-4 md:py-2 rounded shadow hover:bg-blue-700 transition inline-flex items-center"
+                       aria-label="Nueva Organización">
+                        <svg class="w-5 h-5 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        <span class="hidden md:inline">+ Nueva Organización</span>
                     </a>
                 </div>
                 <div class="overflow-x-auto min-h-[400px]">
+                    <!--
+                        Table columns responsive design:
+                        - 'Nombre' and 'Acciones' are always visible.
+                        - 'Dirección' is hidden on screens smaller than 'lg'.
+                        - 'Usuarios' is hidden on screens smaller than 'md'.
+                        - 'Proyectos' is hidden on screens smaller than 'sm'.
+                    -->
                     <table class="w-full bg-white shadow rounded">
                         <thead>
                             <tr class="bg-blue-100 text-left">
-                                <th class="px-4 py-2">Nombre</th>
-                                <th class="px-4 py-2">Dirección</th>
-                                <th class="px-4 py-2">Usuarios</th>
-                                <th class="px-4 py-2">Proyectos</th>
-                                <th class="px-4 py-2">Acciones</th>
+                                <th class="px-4 py-2 text-sm">Nombre</th>
+                                <th class="px-4 py-2 hidden lg:table-cell text-sm">Dirección</th>
+                                <th class="px-4 py-2 hidden md:table-cell text-sm">Usuarios</th>
+                                <th class="px-4 py-2 hidden sm:table-cell text-sm">Proyectos</th>
+                                <th class="px-4 py-2 text-sm"><span class="sr-only">Acciones</span></th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($organizations as $org)
                             <tr class="border-b hover:bg-blue-50 transition">
-                                <td class="px-4 py-2 font-medium text-gray-700">{{ $org->name }}</td>
-                                <td class="px-4 py-2 text-gray-600">{{ $org->location ?? '-' }}</td>
-                                <td class="px-4 py-2">
+                                <td class="px-4 py-2 font-medium text-gray-700 text-sm">{{ $org->name }}</td>
+                                <td class="px-4 py-2 text-gray-600 hidden lg:table-cell text-sm">{{ $org->location ?? '-' }}</td>
+                                <td class="px-4 py-2 hidden md:table-cell text-sm">
                                     <x-user-avatars :users="$org->users" />
                                 </td>
-                                <td class="px-4 py-2">
+                                <td class="px-4 py-2 hidden sm:table-cell text-sm">
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                         {{ $org->projects_count }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-2">
+                                <td class="px-4 py-2 text-sm">
                                     <div class="relative" x-data="{ open: false }">
                                         <button @click="open = !open" class="inline-flex items-center text-gray-700 hover:text-gray-900">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -98,7 +107,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="5" class="px-4 py-6 text-center text-gray-400">
+                                <td colspan="5" class="px-4 py-6 text-center text-gray-400 text-sm">
                                     No hay organizaciones registradas.
                                 </td>
                             </tr>

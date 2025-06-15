@@ -33,7 +33,7 @@
             @endif
 
             <!-- Page Content -->
-            <main>
+            <main class="font-sans">
                 {{ $slot }}
             </main>
         </div>

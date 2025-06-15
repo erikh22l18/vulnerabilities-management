@@ -7,22 +7,22 @@
                     @csrf
                     @method('PUT')
                     <div>
-                        <label for="identifier" class="block font-medium text-gray-700 mb-1">Identificación del proyecto</label>
+                        <label for="identifier" class="block font-medium text-gray-700 mb-1 text-sm">Identificación del proyecto</label>
                         <input type="text" name="identifier" id="identifier" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" value="{{ old('identifier', $project->identifier) }}" required>
                         @error('identifier') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <label for="name" class="block font-medium text-gray-700 mb-1">Nombre</label>
+                        <label for="name" class="block font-medium text-gray-700 mb-1 text-sm">Nombre</label>
                         <input type="text" name="name" id="name" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" value="{{ old('name', $project->name) }}" required>
                         @error('name') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <label for="general_objective" class="block font-medium text-gray-700 mb-1">Objetivo general</label>
+                        <label for="general_objective" class="block font-medium text-gray-700 mb-1 text-sm">Objetivo general</label>
                         <textarea name="general_objective" id="general_objective" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" required>{{ old('general_objective', $project->general_objective) }}</textarea>
                         @error('general_objective') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <label for="organization_id" class="block font-medium text-gray-700 mb-1">Organización</label>
+                        <label for="organization_id" class="block font-medium text-gray-700 mb-1 text-sm">Organización</label>
                         <select name="organization_id" id="organization_id" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" required>
                             <option value="">Seleccione una organización</option>
                             @foreach ($organizations as $org)

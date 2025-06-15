@@ -7,17 +7,17 @@
                     @csrf
                     @method('PUT')
                     <div>
-                        <label for="name" class="block font-medium text-gray-700 mb-1">Nombre</label>
+                        <label for="name" class="block font-medium text-gray-700 mb-1 text-sm">Nombre</label>
                         <input type="text" name="name" id="name" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" value="{{ old('name', $organization->name) }}" required>
                         @error('name') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <label for="location" class="block font-medium text-gray-700 mb-1">Ubicación</label>
+                        <label for="location" class="block font-medium text-gray-700 mb-1 text-sm">Ubicación</label>
                         <input type="text" name="location" id="location" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" value="{{ old('location', $organization->location) }}">
                         @error('location') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <label for="business_model" class="block font-medium text-gray-700 mb-1">Modelo de negocio</label>
+                        <label for="business_model" class="block font-medium text-gray-700 mb-1 text-sm">Modelo de negocio</label>
                         <input type="text" name="business_model" id="business_model" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-blue-200" value="{{ old('business_model', $organization->business_model) }}">
                         @error('business_model') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>

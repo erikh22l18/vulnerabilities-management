@@ -40,6 +40,10 @@
                     </div>
                 </div>
 
+                <div class="mb-4">
+                    <input type="text" id="tableSearchInput" class="mt-1 block w-full md:w-1/3 px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Buscar en la tabla...">
+                </div>
+
                 <div class="overflow-x-auto min-h-[400px]">
                     <!--
                         Table columns responsive design:
@@ -48,7 +52,7 @@
                         - 'Prioridad' is hidden on screens smaller than 'sm'.
                         - 'Usuarios' is hidden on screens smaller than 'sm' (if visible).
                     -->
-                    <table class="w-full bg-white shadow rounded">
+                    <table id="vulnerabilitiesTable" class="w-full bg-white shadow rounded">
                         <thead>
                             <tr class="bg-blue-100 text-left">
                                 <th class="px-4 py-2 text-sm">Título</th>
@@ -169,13 +173,18 @@
                                     </div>
                                 </td>
                             </tr>
+                            @endforelse
+                            <tr id="noSearchResultsRow" style="display: none;">
+                                <td colspan="6" class="px-4 py-6 text-center text-gray-500 text-sm">
+                                    No se encontraron resultados para su búsqueda.
+                                </td>
+                            </tr>
                             @empty
                             <tr>
                                 <td colspan="5" class="px-4 py-6 text-center text-gray-500 text-sm">
                                     No se encontraron vulnerabilidades.
                                 </td>
                             </tr>
-                            @endforelse
                         </tbody>
                     </table>
 
@@ -191,4 +200,73 @@
             </div>
         </div>
     </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('tableSearchInput');
+    const table = document.getElementById('vulnerabilitiesTable');
+    if (!table) return; // Exit if table not found
+    const tableBody = table.querySelector('tbody');
+    if (!tableBody) return; // No table body found
+
+    const dataRows = Array.from(tableBody.getElementsByTagName('tr')).filter(row => row.id !== 'noSearchResultsRow');
+    const noSearchResultsRow = document.getElementById('noSearchResultsRow');
+
+    // Check if the original @empty message is showing.
+    // The @empty block renders a TR with a TD having a specific colspan.
+    // If dataRows is empty AND the @empty message is present, disable search.
+    const initialEmptyMessageTr = Array.from(tableBody.getElementsByTagName('tr')).find(
+        tr => tr.cells.length === 1 && tr.cells[0].getAttribute('colspan') === '5' && tr.id !== 'noSearchResultsRow'
+    );
+
+    if (dataRows.length === 0 && initialEmptyMessageTr) {
+        if(searchInput) searchInput.disabled = true;
+        return;
+    }
+
+    if (!searchInput || !noSearchResultsRow) {
+        // console.error('Search input or noSearchResultsRow not found');
+        return;
+    }
+
+    searchInput.addEventListener('keyup', function () {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        let visibleRows = 0;
+
+        dataRows.forEach(row => {
+            // Ensure it's a data row, not the noSearchResultsRow if it somehow got included
+            if (row.id === 'noSearchResultsRow') return;
+
+            const titleCell = row.cells[0];
+            const titleText = titleCell ? titleCell.textContent.toLowerCase() : '';
+
+            let projectText = '';
+            const headerCells = table.querySelectorAll('thead th'); // Use table context here
+            let projectColumnIndex = -1;
+            headerCells.forEach((th, index) => {
+                if (th.textContent.trim() === 'Proyecto') {
+                    projectColumnIndex = index;
+                }
+            });
+
+            let rowTextToSearch = titleText;
+            if (projectColumnIndex !== -1 && row.cells[projectColumnIndex]) {
+                projectText = row.cells[projectColumnIndex].textContent.toLowerCase();
+                rowTextToSearch += ' ' + projectText;
+            }
+
+            if (rowTextToSearch.includes(searchTerm)) {
+                row.style.display = '';
+                visibleRows++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        if (noSearchResultsRow) {
+            noSearchResultsRow.style.display = visibleRows === 0 ? '' : 'none';
+        }
+    });
+});
+</script>
 </x-app-layout>

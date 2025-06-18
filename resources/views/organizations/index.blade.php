@@ -11,6 +11,9 @@
                         <span class="hidden md:inline">+ Nueva Organización</span>
                     </a>
                 </div>
+                <div class="mb-4">
+                    <input type="text" id="organizationTableSearchInput" class="mt-1 block w-full md:w-1/3 px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Buscar organizaciones...">
+                </div>
                 <div class="overflow-x-auto min-h-[400px]">
                     <!--
                         Table columns responsive design:
@@ -19,7 +22,7 @@
                         - 'Usuarios' is hidden on screens smaller than 'md'.
                         - 'Proyectos' is hidden on screens smaller than 'sm'.
                     -->
-                    <table class="w-full bg-white shadow rounded">
+                    <table id="organizationsTable" class="w-full bg-white shadow rounded">
                         <thead>
                             <tr class="bg-blue-100 text-left">
                                 <th class="px-4 py-2 text-sm">Nombre</th>
@@ -105,13 +108,18 @@
                                     </div>
                                 </td>
                             </tr>
+                            @endforelse
+                            <tr id="noOrganizationSearchResultsRow" style="display: none;">
+                                <td colspan="5" class="px-4 py-6 text-center text-gray-500 text-sm">
+                                    No se encontraron organizaciones para su búsqueda.
+                                </td>
+                            </tr>
                             @empty
                             <tr>
                                 <td colspan="5" class="px-4 py-6 text-center text-gray-400 text-sm">
                                     No hay organizaciones registradas.
                                 </td>
                             </tr>
-                            @endforelse
                         </tbody>
                     </table>
 
@@ -122,4 +130,72 @@
             </div>
         </div>
     </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('organizationTableSearchInput');
+    const table = document.getElementById('organizationsTable');
+
+    if (!table || !searchInput) {
+        // console.error('Search input or table not found for organizations');
+        return;
+    }
+    const tableBody = table.querySelector('tbody');
+    if (!tableBody) return;
+
+    const dataRows = Array.from(tableBody.getElementsByTagName('tr')).filter(row => row.id !== 'noOrganizationSearchResultsRow');
+    const noSearchResultsRow = document.getElementById('noOrganizationSearchResultsRow');
+
+    const initialEmptyMessageTr = Array.from(tableBody.getElementsByTagName('tr')).find(
+        tr => tr.cells.length === 1 && tr.cells[0].getAttribute('colspan') === '5' && tr.id !== 'noOrganizationSearchResultsRow'
+    );
+
+    if (initialEmptyMessageTr && dataRows.length === 0) {
+        searchInput.disabled = true;
+        return;
+    }
+
+    if (!noSearchResultsRow) {
+        // console.error('noOrganizationSearchResultsRow not found');
+        return;
+    }
+
+    searchInput.addEventListener('keyup', function () {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        let visibleRows = 0;
+        const headerCells = table.querySelectorAll('thead th');
+
+        let addressColumnIndex = -1;
+        headerCells.forEach((th, index) => {
+            // Using toLowerCase for 'dirección' to be safe
+            if (th.textContent.trim().toLowerCase() === 'dirección') {
+                addressColumnIndex = index;
+            }
+        });
+
+        dataRows.forEach(row => {
+            // Ensure it's a data row before processing
+            if (row.id === 'noOrganizationSearchResultsRow') return;
+
+            const nameText = row.cells[0] ? row.cells[0].textContent.toLowerCase() : '';
+            let addressText = '';
+
+            if (addressColumnIndex !== -1 && row.cells[addressColumnIndex]) {
+                addressText = row.cells[addressColumnIndex].textContent.toLowerCase();
+            }
+
+            const rowTextToSearch = nameText + ' ' + addressText;
+
+            if (rowTextToSearch.includes(searchTerm)) {
+                row.style.display = '';
+                visibleRows++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        noSearchResultsRow.style.display = visibleRows === 0 ? '' : 'none';
+    });
+});
+</script>
 </x-app-layout>

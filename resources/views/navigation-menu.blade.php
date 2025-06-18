@@ -18,20 +18,13 @@
                         {{ __('Panel principal') }}
                     </x-nav-link>
 
-                    <x-nav-link href="{{ route('projects.index') }}" :active="request()->routeIs('projects.*')">
-                        {{ __('Proyectos') }}
-                    </x-nav-link>
-
                     <x-nav-link href="{{ route('vulnerabilities.index') }}" :active="request()->routeIs('vulnerabilities.*')">
                         {{ __('Vulnerabilidades') }}
                     </x-nav-link>
 
-                    {{-- Link to Users Management for Admin and Leader roles --}}
-                    @hasanyrole('admin|leader')
-                        <x-nav-link href="{{ route('admin.users.index') }}" :active="request()->routeIs('admin.users.*')">
-                            {{ __('Usuarios') }}
-                        </x-nav-link>
-                    @endhasanyrole
+                    <x-nav-link href="{{ route('projects.index') }}" :active="request()->routeIs('projects.*')">
+                        {{ __('Proyectos') }}
+                    </x-nav-link>
 
                     {{-- Link to Organizations Management for Admin role --}}
                     @role('admin')
@@ -39,6 +32,13 @@
                             {{ __('Organizaciones') }}
                         </x-nav-link>
                     @endrole
+
+                    {{-- Link to Users Management for Admin and Leader roles --}}
+                    @hasanyrole('admin|leader')
+                        <x-nav-link href="{{ route('admin.users.index') }}" :active="request()->routeIs('admin.users.*')">
+                            {{ __('Usuarios') }}
+                        </x-nav-link>
+                    @endhasanyrole
                 </div>
             </div>
 

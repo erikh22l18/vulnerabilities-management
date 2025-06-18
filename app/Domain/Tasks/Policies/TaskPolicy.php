@@ -96,6 +96,19 @@ class TaskPolicy
             if ($context->state === Vulnerability::STATE_CERRADA) {
                 return false;
             }
+            // -- New logic for 'lider' and 'miembro' when context is Vulnerability --
+            if ($user->hasRole('lider')) {
+                return true;
+            }
+            if ($user->hasRole('miembro')) {
+                $context->loadMissing(['project.users']); // $context is the Vulnerability instance
+                if (!$context->project || !$context->project->users->contains($user->id)) {
+                    return false; // Miembro not part of the project
+                }
+                return ($context->assigned_user_id == $user->id || $context->created_by == $user->id);
+            }
+            return false; // Deny for other roles or if no specific role logic matches in this context
+            // -- End of new logic --
         } elseif ($context instanceof Task) {
             $task = $context;
             // Ensure relationships are loaded for the task

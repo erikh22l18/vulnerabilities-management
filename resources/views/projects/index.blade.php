@@ -25,6 +25,10 @@
                     </div>
                 </div>
 
+                <div class="mb-4">
+                    <input type="text" id="projectTableSearchInput" class="mt-1 block w-full md:w-1/3 px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Buscar proyectos...">
+                </div>
+
                 {{-- Table Section --}}
                 <div class="overflow-x-auto min-h-[400px]">
                     <!--
@@ -35,7 +39,7 @@
                         - 'Usuarios' is hidden on screens smaller than 'sm'.
                         - 'Vulnerabilidades' is hidden on screens smaller than 'sm'.
                     -->
-                    <table class="w-full bg-white shadow rounded">
+                    <table id="projectsTable" class="w-full bg-white shadow rounded">
                         <thead>
                             <tr class="bg-blue-100 text-left">
                                 <th class="px-4 py-2 text-sm">Identificador</th>
@@ -132,6 +136,11 @@
                                     </td>
                                 </tr>
                             @endforelse
+                            <tr id="noProjectSearchResultsRow" style="display: none;">
+                                <td colspan="7" class="px-4 py-6 text-center text-gray-500 text-sm">
+                                    No se encontraron proyectos para su búsqueda.
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
 
@@ -152,4 +161,75 @@
             </div>
         </div>
     </div>
+
+@verbatim
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('projectTableSearchInput');
+    const table = document.getElementById('projectsTable');
+
+    if (!table || !searchInput) {
+        // console.error('Search input or table not found for projects');
+        return;
+    }
+    const tableBody = table.querySelector('tbody');
+    if (!tableBody) return;
+
+    const dataRows = Array.from(tableBody.getElementsByTagName('tr')).filter(row => row.id !== 'noProjectSearchResultsRow');
+    const noSearchResultsRow = document.getElementById('noProjectSearchResultsRow');
+
+    // Check if the original @empty message is showing. For projects, it has colspan="7".
+    const initialEmptyMessageTr = Array.from(tableBody.getElementsByTagName('tr')).find(
+        tr => tr.cells.length === 1 && tr.cells[0].getAttribute('colspan') === '7' && tr.id !== 'noProjectSearchResultsRow'
+    );
+
+    if (initialEmptyMessageTr && dataRows.length === 0) {
+        searchInput.disabled = true; // Disable search if table is initially empty
+        return;
+    }
+
+    if (!noSearchResultsRow) {
+        // console.error('noProjectSearchResultsRow not found');
+        return;
+    }
+
+    searchInput.addEventListener('keyup', function () {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        let visibleRows = 0;
+        const headerCells = table.querySelectorAll('thead th');
+
+        let organizationColumnIndex = -1;
+        headerCells.forEach((th, index) => {
+            if (th.textContent.trim().toLowerCase() === 'organización') {
+                organizationColumnIndex = index;
+            }
+        });
+
+        dataRows.forEach(row => {
+            // Ensure it's a data row before processing
+            if (row.id === 'noProjectSearchResultsRow') return;
+
+            const identifierText = row.cells[0] ? row.cells[0].textContent.toLowerCase() : '';
+            const nameText = row.cells[1] ? row.cells[1].textContent.toLowerCase() : '';
+            let organizationText = '';
+
+            if (organizationColumnIndex !== -1 && row.cells[organizationColumnIndex]) {
+                organizationText = row.cells[organizationColumnIndex].textContent.toLowerCase();
+            }
+
+            const rowTextToSearch = identifierText + ' ' + nameText + ' ' + organizationText;
+
+            if (rowTextToSearch.includes(searchTerm)) {
+                row.style.display = '';
+                visibleRows++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        noSearchResultsRow.style.display = visibleRows === 0 ? '' : 'none';
+    });
+});
+</script>
+@endverbatim
 </x-app-layout>

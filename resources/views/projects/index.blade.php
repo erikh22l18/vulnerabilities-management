@@ -129,18 +129,18 @@
                                         </div>
                                     </td>
                                 </tr>
-                            @endforelse
-                            <tr id="noProjectSearchResultsRow" style="display: none;">
-                                <td colspan="7" class="px-4 py-6 text-center text-gray-500 text-sm">
-                                    No se encontraron proyectos para su búsqueda.
-                                </td>
-                            </tr>
                             @empty
                                 <tr>
                                     <td colspan="7" class="px-4 py-6 text-center text-gray-500 text-sm">
                                         No se encontraron proyectos.
                                     </td>
                                 </tr>
+                            @endforelse
+                            <tr id="noProjectSearchResultsRow" style="display: none;">
+                                <td colspan="7" class="px-4 py-6 text-center text-gray-500 text-sm">
+                                    No se encontraron proyectos para su búsqueda.
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
 

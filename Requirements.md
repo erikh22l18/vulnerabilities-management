@@ -4,8 +4,8 @@
 
 ### RQF1.1 - Carga Masiva de Vulnerabilidades (Importación Excel)
 - **Descripción General:** El sistema permitirá la carga masiva de vulnerabilidades mediante un archivo Excel (XLSX). Este proceso se realizará de forma asíncrona para no afectar el rendimiento de la aplicación y proporcionará retroalimentación detallada al usuario sobre el resultado de la importación.
-- **Referencia ISO 27001:** A.12.5.1, A.12.6.1, A.14.2.1, A.18.1.3
-- **Estado:** PARCIALMENTE IMPLEMENTADO (Backend y UI básica para historial/errores lista. Lógica de importación en `VulnerabilityImport` por refactorizar).
+- **Referencia ISO 27001:** A.12.5.1, A.12.6.1, A.14.2.1, A.18.1.3; ISO/IEC 27034-1 (Application Security - Secure data input)
+- **Estado:** IMPLEMENTADO. La lógica de importación en `VulnerabilityImport` ha sido refactorizada para mejorar claridad y mantenibilidad. Los usuarios con rol 'Líder' también pueden importar vulnerabilidades.
 
 #### RQF1.1.1 - Formato y Plantilla del Archivo
 - **Descripción:** Se definirá una plantilla Excel (`plantilla_vulnerabilidades.xlsx`) que los usuarios deberán utilizar para la carga masiva. La plantilla contendrá columnas predefinidas correspondientes a los campos de una vulnerabilidad.
@@ -35,7 +35,8 @@
         - Se valida que el Proyecto y Usuario Responsable (si se proveen) existan en el sistema.
         - Se valida que el usuario asignado como responsable pertenezca a la misma organización que el proyecto de la vulnerabilidad.
     - **Manejo de Duplicados:** (Ver RQF1.1.5)
-- **Estado:** IMPLEMENTADO (Validación de cabeceras y validación de filas básicas en `VulnerabilityImport`). Lógica de validación de pertenencia a organización para usuario responsable necesita ser robustecida en `VulnerabilityImport`.
+- **Estado:** IMPLEMENTADO (Validación de cabeceras y validación de filas básicas en `VulnerabilityImport`). Lógica de validación de pertenencia a organización para usuario responsable robustecida en `VulnerabilityImport`.
+- **Referencia ISO 27001:** (Existente); ISO/IEC 27034-1 (Application Security - Input validation)
 
 #### RQF1.1.4 - Reporte Detallado de Errores y Tracking de Lotes (Batch)
 - **Descripción:** Se proporciona un informe detallado de errores y se rastrea cada intento de importación.
@@ -54,13 +55,13 @@
 - **Estado:** IMPLEMENTADO.
 
 #### RQF1.1.5 - Manejo de Duplicados y Actualizaciones
-- **Descripción:** El sistema debe definir cómo manejar vulnerabilidades que ya podrían existir en la base de datos, basándose en un identificador único (ej. Título + Proyecto + Componente).
+- **Descripción:** La estrategia actual es actualizar el registro existente si se encuentra por **título, componente y proyecto**. Se han implementado opciones configurables (por lote de importación) para Omitir o Marcar como Error las filas duplicadas.
 - **Especificaciones:**
     - **Opción 1 (Actualizar):** Si se encuentra una vulnerabilidad duplicada (basado en campos clave), se actualizan sus datos con la información del Excel. Se registra la acción. (IMPLEMENTADO por defecto en `VulnerabilityImport`)
-    - **Opción 2 (Omitir):** Si se encuentra un duplicado, se omite la fila del Excel y se registra. (No implementado, actual es actualizar)
-    - **Opción 3 (Marcar como Error):** Si se encuentra un duplicado, se marca como un error para esa fila. (No implementado)
-    - La estrategia actual es actualizar el registro existente si se encuentra por título dentro del mismo proyecto. Se debe revisar si se necesitan identificadores más robustos para duplicados.
-- **Estado:** IMPLEMENTADO (Actualización simple por título en mismo proyecto). Necesita revisión para robustez.
+    - **Opción 2 (Omitir):** Si se encuentra un duplicado, se omite la fila del Excel y se registra. (IMPLEMENTADO)
+    - **Opción 3 (Marcar como Error):** Si se encuentra un duplicado, se marca como un error para esa fila. (IMPLEMENTADO)
+- **Estado:** IMPLEMENTADO (Identificación de duplicados por título, componente y proyecto. Estrategias 'Actualizar', 'Omitir', 'Error' implementadas en la lógica de importación. Requiere UI para selección de estrategia y migración para `import_batches` para almacenar la estrategia y conteo de omitidos).
+- **Referencia ISO 27001:** (Existente); ISO/IEC 25010 (Software Quality - Functional Suitability - Functional Correctness)
 
 #### RQF1.1.6 - Asignación de Campos y Valores por Defecto
 - **Descripción:** Ciertos campos pueden tener valores por defecto o ser derivados si no se proveen en el Excel.
@@ -103,12 +104,14 @@
 ##### RQF1.1.7.3 - Gestión de Archivos Temporales
 - **Descripción:** Los archivos cargados durante el proceso multi-pasos se almacenan temporalmente.
     *   Se eliminan automáticamente después de que el job de importación es despachado.
-    *   Se planea implementar una tarea programada (Artisan command) para limpiar archivos temporales huérfanos que puedan quedar si el usuario abandona el proceso a mitad de camino. (PENDIENTE - Limpieza automática de huérfanos)
-- **Estado:** PARCIALMENTE IMPLEMENTADO (Eliminación post-despacho implementada; limpieza de huérfanos pendiente).
+    *   Se planea implementar una tarea programada (Artisan command) para limpiar archivos temporales huérfanos que puedan quedar si el usuario abandona el proceso a mitad de camino.
+- **Estado:** IMPLEMENTADO (Eliminación post-despacho implementada. Comando Artisan 'import:cleanup-orphaned-files' creado para limpieza de huérfanos).
+- **Referencia ISO 27001:** (Existente); ISO 27001 (A.12.3.1 Information backup - though this is more about preventing data loss from orphaned files than backup)
 
 ### RQF2 - Gestión de usuarios, proyectos y organizaciones
 - **Registro de usuarios con campos como nombre, correo, área, organización y contraseña:** IMPLEMENTADO (campo 'área' añadido).
-- **Asignación de roles y permisos según estructura organizacional:** IMPLEMENTADO (roles Admin, Líder, Miembro con permisos definidos en `RolePermissionSeeder`). Se requiere lógica de Policies para restricciones más finas en `miembro`.
+- **Asignación de roles y permisos según estructura organizacional:** IMPLEMENTADO (roles Admin, Líder, Miembro con permisos definidos en `RolePermissionSeeder`). Lógica de Policies para restricciones finas del rol 'miembro' implementada y permisos de 'crear/editar tareas' actualizados en RolePermissionSeeder.
+- **Referencia ISO 27001 (RBAC):** (Existente); ISO/IEC 25010 (Software Quality - Security - Access control)
 - **Registro de proyectos con identificación, nombre y organización asociada:** IMPLEMENTADO.
 - **Registro de organizaciones con nombre, ubicación y modelo de negocio:** IMPLEMENTADO.
 
@@ -154,14 +157,17 @@ El sistema debe adaptar dinámicamente la visualización del dashboard según el
 
 ### RQF6 - Control de estados de una vulnerabilidad
 - **Flujo de estados:** `Detectada` -> `En tratamiento` -> `Resuelta` -> `Cerrada` (estado "Asignada" eliminado del flujo principal según feedback). IMPLEMENTADO.
-- **No se puede modificar una vez cerrada (con matices):** IMPLEMENTADO (modificación de campos principales impedida; cambio de estado a reapertura requiere justificación).
+- **No se puede modificar una vez cerrada (con matices):** IMPLEMENTADO (modificación de campos principales impedida; cambio de estado a reapertura requiere justificación). Política `VulnerabilityPolicy::changeStatus` ajustada para permitir que `VulnerabilityStateService` gestione la reapertura de vulnerabilidades cerradas (con justificación).
 - **Se requiere justificación textual para cambios de estado:** IMPLEMENTADO (guardada en `VulnerabilityComment` con estado anterior/posterior).
 - **Registro del autor y resumen de cada acción:** IMPLEMENTADO (autor en `VulnerabilityComment`, detalles en `AuditLog`).
 - **Lógica de transición en servicio dedicado:** IMPLEMENTADO (`VulnerabilityStateService`).
+- **Referencia ISO 27001:** (Existente); ISO/IEC 12207 (Software Lifecycle Processes - Maintenance Process); ISO/IEC 25010 (Software Quality - Reliability - Maturity)
 
 ### RQF7 - Historial de cambios y auditoría
-- **Registro de cada acción sobre una vulnerabilidad:** IMPLEMENTADO (usando `AuditLog` con `VulnerabilityObserver` y eventos de pivote para creación, actualización de campos, eliminación, asignación/desasignación de usuarios. Cambios de estado en `VulnerabilityComment`).
+- **Registro de cada acción sobre una vulnerabilidad:** IMPLEMENTADO (usando `AuditLog` con `VulnerabilityObserver` para creación, actualización de campos principales, y eliminación. Eventos de pivote para asignación/desasignación de usuarios. Cambios de estado en `VulnerabilityComment`).
 - **Contenido informativo no editable, asociado a proyecto y organización:** IMPLEMENTADO.
+- **Estado:** IMPLEMENTADO
+- **Referencia ISO 27001:** (Existente); ISO/IEC 27034-1 (Application Security - Audit trails)
 
 ### RQF8 - Notificaciones automáticas (Opcional)
 - **OMITIDO** (por decisión del usuario).
@@ -198,18 +204,19 @@ El sistema debe adaptar dinámicamente la visualización del dashboard según el
 
 ### RQS1 - Autenticación y control de acceso
 - **Login con usuario y contraseña cifrada:** IMPLEMENTADO (provisto por Laravel Fortify/Jetstream, contraseñas hasheadas).
-- **Control de acceso basado en roles (RBAC):** IMPLEMENTADO (`RolePermissionSeeder` ajustado). Se requiere lógica de Policies para la restricción fina del rol `miembro` sobre *sus* vulnerabilidades.
+- **Control de acceso basado en roles (RBAC):** IMPLEMENTADO (`RolePermissionSeeder` ajustado). Lógica de Policies para la restricción fina del rol 'miembro' sobre *sus* vulnerabilidades implementada.
 - **Autenticación en dos pasos:** IMPLEMENTADO (provisto por Laravel Fortify, funcionalidad confirmada por el usuario).
 
 ### RQS2 - Cifrado de datos sensibles
 - **Uso obligatorio de HTTPS y TLS 1.2 o superior:** CONFIRMADO (requisito de entorno de servidor).
 - **Cifrado en almacenamiento y transmisión de datos:**
     - Transmisión: Cubierta por HTTPS.
-    - Almacenamiento: Contraseñas hasheadas, secretos 2FA cifrados por Fortify. No se identificaron otros campos que requieran cifrado reversible en BD en esta etapa.
+    - Almacenamiento: Contraseñas hasheadas, secretos 2FA cifrados por Fortify. Adicionalmente, campos como identificación del usuario, y título, descripción y componente de las vulnerabilidades utilizan cifrado reversible.
+- **Referencia ISO 27001:** (Existente); ISO/IEC 27034-1 (Application Security - Data security)
 
 ### RQS3 - Integridad de la información
-- **Implementación de auditoría o bitácora para asegurar trazabilidad:** IMPLEMENTADO (mediante `AuditLog` y `VulnerabilityComment`).
-- **Toda modificación queda registrada:** IMPLEMENTADO.
+- **Implementación de auditoría o bitácora para asegurar trazabilidad:** IMPLEMENTADO (mediante `AuditLog` y `VulnerabilityComment`). (Estado: IMPLEMENTADO)
+- **Toda modificación queda registrada:** IMPLEMENTADO (core CRUD on vulnerabilities, assignments, and state changes are logged). (Estado: IMPLEMENTADO)
 
 ### RQS4 - Protección contra vulnerabilidades comunes
 - **Validación de entrada y lógica contra OWASP Top 10 (SQLi, XSS, CSRF):** REVISADO. Laravel provee una base sólida (Eloquent para SQLi, Blade para XSS, middleware CSRF). Se confirmó uso adecuado de estas protecciones y validaciones de entrada.

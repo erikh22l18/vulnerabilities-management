@@ -117,9 +117,8 @@ class RolePermissionSeeder extends Seeder
                 // Permisos de acción para Vulnerabilidades
                 'crear vulnerabilidades', // Requisito: Registro de vulnerabilidades
                 'editar vulnerabilidades',// Requisito: Control de estados de *sus* vulnerabilidades (requiere lógica de negocio adicional para restringir a "sus")
-                
-                // NOTA: crear tareas y editar tareas han sido removidos para el rol miembro.
-                // Si un miembro necesita gestionar tareas, esos permisos deberían revisarse.
+                'crear tareas',         // Permitir a miembros crear tareas para sus vulnerabilidades
+                'editar tareas',        // Permitir a miembros editar tareas que les conciernen
             ])->unique() // Asegurar que no haya duplicados si la lista base los tuviera
         );
     }

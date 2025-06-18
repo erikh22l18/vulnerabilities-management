@@ -201,6 +201,7 @@
         </div>
     </div>
 
+@verbatim
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('tableSearchInput');
@@ -269,4 +270,5 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+@endverbatim
 </x-app-layout>

@@ -131,6 +131,7 @@
         </div>
     </div>
 
+@verbatim
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('organizationTableSearchInput');
@@ -198,4 +199,5 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+@endverbatim
 </x-app-layout>
